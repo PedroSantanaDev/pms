@@ -19,6 +19,12 @@ namespace pms.app.Repository
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task AddRangeAsync(IEnumerable<Entity> entities)
+        {
+            await _dbContext.Set<Entity>().AddRangeAsync(entities);
+            await _dbContext.SaveChangesAsync();
+        }
+
         public async Task DeleteAsync(int id)
         {
             var entity = await GetByIdAsync(id);
@@ -30,17 +36,20 @@ namespace pms.app.Repository
         }
 
         public async Task<List<Entity>> GetAllAsync(Expression<Func<Entity, bool>> filter = null,
-                                             Func<IQueryable<Entity>, IOrderedQueryable<Entity>> orderBy = null,
-                                             string includeProperties = "",
-                                             int page = 1,
-                                             int pageSize = 25)
+                                                     Func<IQueryable<Entity>, IOrderedQueryable<Entity>> orderBy = null,
+                                                     string includeProperties = "",
+                                                     int page = 1,
+                                                     int pageSize = 25)
         {
             IQueryable<Entity> query = _dbContext.Set<Entity>();
 
             // Include related entities
-            foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            if (!string.IsNullOrEmpty(includeProperties))
             {
-                query = query.Include(includeProperty);
+                foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProperty);
+                }
             }
 
             // Apply filter if provided
@@ -56,6 +65,15 @@ namespace pms.app.Repository
             }
 
             // Apply pagination
+            // Some defensive coding checking the page, should not happen if front-end properly validates
+            if (page < 1)
+            {
+                page = 1;
+            }
+            if (pageSize < 1)
+            {
+                pageSize = 25;
+            }
             query = query.Skip((page - 1) * pageSize).Take(pageSize);
 
             return await query.ToListAsync();

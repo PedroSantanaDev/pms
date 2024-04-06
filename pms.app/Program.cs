@@ -10,6 +10,7 @@ using pms.app.UnitOfWork;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 // Add services to the container.
 
 // Register Razor Components
@@ -32,10 +33,7 @@ builder.Services.AddIdentityCore<IdentityUser>(options => options.SignIn.Require
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
-// Add init of work and repositories
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IRepository<Item>, Repository<Item>>();
-builder.Services.AddScoped<IRepository<Category>, Repository<Category>>();
+
 
 // Configure authentication services
 builder.Services.AddAuthentication(options =>
@@ -52,7 +50,7 @@ builder.Services.AddAuthentication(options =>
     // Configure options for external sign-in cookie
     options.Cookie.Name = "Identity.External";
     options.Cookie.SameSite = SameSiteMode.None;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.None; // Adjust this according to your security requirements
+    options.Cookie.SecurePolicy = CookieSecurePolicy.None;
 });
 
 // Add authorization services
@@ -77,6 +75,12 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
 // Add custom email sender
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
+// Register with the DI container
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IRepository<Item>, Repository<Item>>();
+builder.Services.AddScoped<IRepository<Category>, Repository<Category>>();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -92,7 +96,7 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseAntiforgery();
+//app.UseAntiforgery();
 
 // Map Blazor components and enable interactive server render mode
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();

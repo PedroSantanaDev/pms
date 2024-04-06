@@ -11,6 +11,7 @@ namespace pms.app.Repository
                                  int pageSize = 25);
         Task<Entity> GetByIdAsync(int id);
         Task AddAsync(Entity entity);
+        Task AddRangeAsync(IEnumerable<Entity> entities);
         Task UpdateAsync(Entity entity);
         Task DeleteAsync(int id);
 

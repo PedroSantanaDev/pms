@@ -1,7 +1,10 @@
-﻿namespace pms.app.UnitOfWork
+﻿using pms.app.Repository;
+
+namespace pms.app.UnitOfWork
 {
     public interface IUnitOfWork : IDisposable
     {
-        void SaveChanges();
+        IRepository<Entity> GetRepository<Entity>() where Entity : class;
+        Task<int> SaveChangesAsync();
     }
 }

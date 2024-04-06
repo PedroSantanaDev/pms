@@ -6,12 +6,10 @@ namespace pms.app.UnitOfWork
     public class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _dbContext;
-        private Dictionary<string, object> _repositories;
 
         public UnitOfWork(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
-            _repositories = new Dictionary<string, object>();
         }
 
         public IRepository<Entity> GetRepository<Entity>() where Entity : class
@@ -24,9 +22,9 @@ namespace pms.app.UnitOfWork
             _dbContext.Dispose();
         }
 
-        public void SaveChanges()
+        public async Task<int> SaveChangesAsync()
         {
-            _dbContext.SaveChanges();
+            return await _dbContext.SaveChangesAsync();
         }
     }
 }
