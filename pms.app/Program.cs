@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using pms.app.Components;
 using pms.app.Components.Account;
 using pms.app.Data;
+using pms.app.Models;
+using pms.app.Repository;
+using pms.app.UnitOfWork;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +31,11 @@ builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuth
 builder.Services.AddIdentityCore<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
+
+// Add init of work and repositories
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IRepository<Item>, Repository<Item>>();
+builder.Services.AddScoped<IRepository<Category>, Repository<Category>>();
 
 // Configure authentication services
 builder.Services.AddAuthentication(options =>
