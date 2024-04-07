@@ -35,12 +35,13 @@ namespace pms.app.tests
         }
 
         [Fact]
-        public void Customer_Items_Navigation_Property_Should_Be_Null_By_Default_Test()
+        public void Customer_Items_Navigation_Property_Should_Be_Empty_By_Default_Test()
         {
             var customer = GetTestCustomers().First();
 
             // Assert
-            Assert.Null(customer.CustomerItems);
+            Assert.NotNull(customer.CustomerItems);
+            Assert.Empty(customer.CustomerItems);
         }
 
         [Fact]

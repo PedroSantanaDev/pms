@@ -180,6 +180,28 @@ namespace pms.app.tests
         [Fact]
         public async Task Get_Categories_With_Items_Should_Return_Categories_With_Items_Assigned_Test()
         {
+            var items = await _unitOfWork.GetRepository<Item>().GetAllAsync();
+            var categories = await _unitOfWork.GetRepository<Category>().GetAllAsync();
+
+            //Assert
+            Assert.NotNull(items);
+            Assert.NotNull(categories);
+
+            //Make sure there is an Category with item assinged
+            var category = categories.First();
+            var item = items.First();
+            var itemId = item.Id;
+            var categoryId = category.Id;
+            //Assert
+            Assert.NotNull(item);
+            Assert.NotNull(category);
+
+            item.Category = category;
+            item.CategoryId = category.Id;
+
+            await _unitOfWork.GetRepository<Item>().UpdateAsync(item);
+
+
             // Set up filter
             Expression<Func<Category, bool>> filter = i => i.Items != null && i.Items.Count > 0;
 
@@ -206,11 +228,11 @@ namespace pms.app.tests
             Assert.IsType<List<Category>>(result);
             Assert.True(result.Count <= 10);
 
-            foreach (var category in result)
+            foreach (var c in result)
             {
-                Assert.NotNull(category);
-                Assert.NotNull(category.Name);
-                Assert.NotNull(category.Items);
+                Assert.NotNull(c);
+                Assert.NotNull(c.Name);
+                Assert.NotNull(c.Items);
             }
         }
 
