@@ -12,6 +12,6 @@
         public DateTime Created { get; set; } = DateTime.Now;
         public DateTime? Updated { get; set; }
 
-        public ICollection<CustomerItem>? CustomerItems { get; set; }
+        public ICollection<CustomerItem>? CustomerItems { get; set; } = new List<CustomerItem>();
     }
 }

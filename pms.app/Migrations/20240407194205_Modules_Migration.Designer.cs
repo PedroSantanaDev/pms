@@ -11,8 +11,8 @@ using pms.app.Data;
 namespace pms.app.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240407132149_sku_to_item")]
-    partial class sku_to_item
+    [Migration("20240407194205_Modules_Migration")]
+    partial class Modules_Migration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -237,6 +237,70 @@ namespace pms.app.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("pms.app.Models.Customer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("City")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("Updated")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Customers");
+                });
+
+            modelBuilder.Entity("pms.app.Models.CustomerItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("AssignedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("CustomerItems");
+                });
+
             modelBuilder.Entity("pms.app.Models.Item", b =>
                 {
                     b.Property<int>("Id")
@@ -258,9 +322,6 @@ namespace pms.app.Migrations
 
                     b.Property<decimal>("Price")
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("SKU")
-                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -327,6 +388,25 @@ namespace pms.app.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("pms.app.Models.CustomerItem", b =>
+                {
+                    b.HasOne("pms.app.Models.Customer", "Customer")
+                        .WithMany("CustomerItems")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("pms.app.Models.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Item");
+                });
+
             modelBuilder.Entity("pms.app.Models.Item", b =>
                 {
                     b.HasOne("pms.app.Models.Category", "Category")
@@ -339,6 +419,11 @@ namespace pms.app.Migrations
             modelBuilder.Entity("pms.app.Models.Category", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("pms.app.Models.Customer", b =>
+                {
+                    b.Navigation("CustomerItems");
                 });
 #pragma warning restore 612, 618
         }

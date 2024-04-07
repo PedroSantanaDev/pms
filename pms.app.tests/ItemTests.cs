@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using pms.app.Data;
+﻿using pms.app.Data;
 using pms.app.Models;
 using System.Linq.Expressions;
 
@@ -12,14 +11,8 @@ namespace pms.app.tests
 
         public ItemTests()
         {
-            // Set up the test database connection string
-            var connectionString = "Data Source=pms.db";
-
-            // Set up the DbContext with the test database connection string
-            var dbContextOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseSqlite(connectionString)
-                .Options;
-            _dbContext = new ApplicationDbContext(dbContextOptions);
+            var dbOptions = DbHelper.GetDbOptions();
+            _dbContext = new ApplicationDbContext(dbOptions);
 
             // Initialize UnitOfWork with the actual ApplicationDbContext
             _unitOfWork = new UnitOfWork.UnitOfWork(_dbContext);

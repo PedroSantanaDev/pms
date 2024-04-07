@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using pms.app.Data;
 
@@ -11,11 +10,9 @@ using pms.app.Data;
 namespace pms.app.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240407184107_adding_fields_to_customer_item")]
-    partial class adding_fields_to_customer_item
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.3");
@@ -283,10 +280,10 @@ namespace pms.app.Migrations
                     b.Property<DateTime>("AssignedDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("CustomerId")
+                    b.Property<int?>("CustomerId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("ItemId")
+                    b.Property<int?>("ItemId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("Quantity")
@@ -392,15 +389,11 @@ namespace pms.app.Migrations
                 {
                     b.HasOne("pms.app.Models.Customer", "Customer")
                         .WithMany("CustomerItems")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CustomerId");
 
                     b.HasOne("pms.app.Models.Item", "Item")
                         .WithMany()
-                        .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ItemId");
 
                     b.Navigation("Customer");
 

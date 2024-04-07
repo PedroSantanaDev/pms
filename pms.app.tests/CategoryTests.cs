@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using pms.app.Data;
+﻿using pms.app.Data;
 using pms.app.Models;
 using System.Linq.Expressions;
 
@@ -11,14 +10,8 @@ namespace pms.app.tests
         private readonly UnitOfWork.UnitOfWork _unitOfWork;
         public CategoryTests()
         {
-            // Set up the test database connection string
-            var connectionString = "Data Source=pms.db";
-
-            // Set up the DbContext with the test database connection string
-            var dbContextOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseSqlite(connectionString)
-                .Options;
-            _dbContext = new ApplicationDbContext(dbContextOptions);
+            var dbOptions = DbHelper.GetDbOptions();
+            _dbContext = new ApplicationDbContext(dbOptions);
 
             // Initialize UnitOfWork with the actual ApplicationDbContext
             _unitOfWork = new UnitOfWork.UnitOfWork(_dbContext);
@@ -152,20 +145,36 @@ namespace pms.app.tests
         public async Task Delete_Category_Should_Delete_Category_If_Exists_Test()
         {
             var categories = await _unitOfWork.GetRepository<Category>().GetAllAsync();
-            int id = categories.First().Id;
+            var category = categories.FirstOrDefault(); // Deleting the first category for testing
 
-            var category = await _unitOfWork.GetRepository<Category>().GetByIdAsync(id);
-
-            //Assert
+            // Assert
             Assert.NotNull(category);
-            Assert.IsType<Category>(category);
 
-            await _unitOfWork.GetRepository<Category>().DeleteAsync(id);
+            // Get items associated with the category
+            var items = await _unitOfWork.GetRepository<Item>().GetAllAsync(i => i.CategoryId == category.Id);
 
-            category = await _unitOfWork.GetRepository<Category>().GetByIdAsync(id);
+            // Update category reference for each item associated with this category
+            foreach (var item in items)
+            {
+                item.CategoryId = null;
+                await _unitOfWork.GetRepository<Item>().UpdateAsync(item);
+            }
 
-            //Assert
-            Assert.Null(category);
+            // Delete the category
+            await _unitOfWork.GetRepository<Category>().DeleteAsync(category.Id);
+
+            var deletedCategory = await _unitOfWork.GetRepository<Category>().GetByIdAsync(category.Id);
+
+            // Assert that the category is deleted
+            Assert.Null(deletedCategory);
+
+            // Assert that associated items are updated (category reference set to null or to a different category)
+            foreach (var item in items)
+            {
+                var updatedItem = await _unitOfWork.GetRepository<Item>().GetByIdAsync(item.Id);
+                Assert.NotNull(updatedItem);
+                Assert.Null(updatedItem.CategoryId);
+            }
         }
 
         [Fact]
