@@ -107,6 +107,7 @@ namespace pms.app.tests
             await _unitOfWork.SaveChangesAsync();
             var result = await _unitOfWork.GetRepository<Item>().GetAllAsync();
 
+            // Assert
             Assert.NotNull(result);
             Assert.NotEmpty(result);
         }
@@ -114,11 +115,6 @@ namespace pms.app.tests
         [Fact]
         public async Task Get_All_Items_Should_Return_List_Of_Items_Test()
         {
-            // Add items to database
-            //_unitOfWork_unitOfWork.GetRepository<Item>().AddRange(items);
-            await _dbContext.SaveChangesAsync();
-
-            // Act
             var result = await _unitOfWork.GetRepository<Item>().GetAllAsync();
 
             // Assert
@@ -142,7 +138,6 @@ namespace pms.app.tests
             int page = 1;
             int pageSize = 10;
 
-            // Act
             var result = await _unitOfWork.GetRepository<Item>().GetAllAsync(
                 filter,
                 orderBy,
@@ -150,6 +145,8 @@ namespace pms.app.tests
                 page,
                 pageSize
             );
+
+            //Assert
             Assert.NotNull(result);
             Assert.NotEmpty(result);
             Assert.IsType<List<Item>>(result);
@@ -181,6 +178,7 @@ namespace pms.app.tests
 
             var item = await _unitOfWork.GetRepository<Item>().GetByIdAsync(id);
 
+            // Assert
             Assert.NotNull(item);
             Assert.IsType<Item>(item);
             Assert.Equal(id, item.Id);
@@ -192,6 +190,7 @@ namespace pms.app.tests
 
             item = await _unitOfWork.GetRepository<Item>().GetByIdAsync(id);
 
+            //Assert
             Assert.NotNull(item);
             Assert.IsType<Item>(item);
             Assert.Equal(id, item.Id);
@@ -206,13 +205,50 @@ namespace pms.app.tests
             int id = items.First().Id;
 
             var item = await _unitOfWork.GetRepository<Item>().GetByIdAsync(id);
+
+            //Assert
             Assert.NotNull(item);
             Assert.IsType<Item>(item);
 
             await _unitOfWork.GetRepository<Item>().DeleteAsync(id);
 
             item = await _unitOfWork.GetRepository<Item>().GetByIdAsync(id);
+
+            //Assert
             Assert.Null(item);
+        }
+
+        [Fact]
+        public async Task Add_Category_To_Item_Should_Assign_Category_Test()
+        {
+            var items = await _unitOfWork.GetRepository<Item>().GetAllAsync();
+            var categories = await _unitOfWork.GetRepository<Category>().GetAllAsync();
+
+            //Assert
+            Assert.NotNull(items);
+            Assert.NotNull(categories);
+
+            var category = categories.First();
+            var item = items.First();
+            var itemId = item.Id;
+            var categoryId = category.Id;
+            //Assert
+            Assert.NotNull(item);
+            Assert.NotNull(category);
+
+            item.Category = category;
+            item.CategoryId = category.Id;
+
+            await _unitOfWork.GetRepository<Item>().UpdateAsync(item);
+
+            item = await _unitOfWork.GetRepository<Item>().GetByIdAsync(itemId);
+
+            //Assert
+            Assert.NotNull(item);
+            Assert.IsType<Item>(item);
+            Assert.Equal(categoryId, item.CategoryId);
+            Assert.NotNull(item.Category);
+            Assert.IsType<Category>(item.Category);
         }
 
         // Helper method to return test items
