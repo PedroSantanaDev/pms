@@ -12,7 +12,8 @@ namespace pms.app.Data
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
-            Database.EnsureCreated();
+            //Database.Migrate();
+            //Database.EnsureCreated();
         }
 
         public ApplicationDbContext() : base()

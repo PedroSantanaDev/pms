@@ -25,8 +25,81 @@ namespace pms.app.tests
             _unitOfWork = new UnitOfWork.UnitOfWork(_dbContext);
         }
 
+
         [Fact]
-        public async Task AddRangeItemTest()
+        public void Item_Properties_Should_Work_Correctly_Tests()
+        {
+            var item = new Item
+            {
+                Id = 1,
+                Name = "TestItem",
+                Description = "Test Description",
+                Price = 99.99m,
+                Status = "Active",
+                Created = new DateTime(2024, 4, 1),
+                CategoryId = 1
+            };
+
+            // Assert
+            Assert.Equal(1, item.Id);
+            Assert.Equal("TestItem", item.Name);
+            Assert.Equal("Test Description", item.Description);
+            Assert.Equal(99.99m, item.Price);
+            Assert.Equal("Active", item.Status);
+            Assert.Equal(new DateTime(2024, 4, 1), item.Created);
+            Assert.Equal(1, item.CategoryId);
+            Assert.Null(item.Category);
+        }
+
+        [Fact]
+        public void Item_Category_Navigation_Property_Should_Be_Null_By_Default_Test()
+        {
+            var item = new Item
+            {
+                Id = 1,
+                Name = "TestItem",
+                Description = "Test Description",
+                Price = 99.99m,
+                Status = "Active",
+                Created = new DateTime(2024, 4, 1),
+                CategoryId = 1,
+            };
+
+            // Assert
+            Assert.Null(item.Category);
+        }
+
+        [Fact]
+        public void Item_Category_Navigation_Property_Should_Not_Be_Null_Test()
+        {
+            var category = new Category
+            {
+                Id = 1,
+                Name = "Computer",
+                Description = "Test Description",
+                Created = DateTime.Now,
+            };
+            var item = new Item
+            {
+                Id = 1,
+                Name = "TestItem",
+                Description = "Test Description",
+                Price = 99.99m,
+                Status = "Active",
+                Created = new DateTime(2024, 4, 1),
+                CategoryId = 1,
+                Category = category
+            };
+
+
+            // Assert
+            Assert.NotNull(item.Category);
+            Assert.Equal(category.Id, item.CategoryId);
+            Assert.Equal(item.CategoryId, category.Id);
+        }
+
+        [Fact]
+        public async Task Add_Range_Item_Should_Add_List_Of_Items_To_DB_Test()
         {
             var items = GetTestItems();
 
@@ -39,7 +112,7 @@ namespace pms.app.tests
         }
 
         [Fact]
-        public async Task GetAllItemsTest()
+        public async Task Get_All_Items_Should_Return_List_Of_Items_Test()
         {
             // Add items to database
             //_unitOfWork_unitOfWork.GetRepository<Item>().AddRange(items);
@@ -55,7 +128,7 @@ namespace pms.app.tests
         }
 
         [Fact]
-        public async Task GetAllItemsWithQueryTest()
+        public async Task Get_All_Items_With_Query_Should_Return_List_Of_Items_For_Matching_Query_Test()
         {
             // Set up filter
             Expression<Func<Item, bool>> filter = i => i.Status == "Active";
@@ -90,7 +163,7 @@ namespace pms.app.tests
         }
 
         [Fact]
-        public async Task GetItemByIdTest()
+        public async Task Get_Item_By_Id_Should_Return_Item_For_Specified_Id_Test()
         {
             var items = await _unitOfWork.GetRepository<Item>().GetAllAsync();
             int id = items.First().Id;
@@ -101,7 +174,7 @@ namespace pms.app.tests
         }
 
         [Fact]
-        public async Task UpdateItemTest()
+        public async Task Update_Item_Should_Update_Item_If_Exist_Test()
         {
             var items = await _unitOfWork.GetRepository<Item>().GetAllAsync();
             int id = items.First().Id;
@@ -127,7 +200,7 @@ namespace pms.app.tests
             Assert.Equal(2250, item.Price);
         }
         [Fact]
-        public async Task DeleteItemTest()
+        public async Task Delete_Item_Should_Delete_Item_If_Exists_Test()
         {
             var items = await _unitOfWork.GetRepository<Item>().GetAllAsync();
             int id = items.First().Id;
@@ -143,14 +216,15 @@ namespace pms.app.tests
         }
 
         // Helper method to return test items
-        private List<Item> GetTestItems() =>
-        [
-            new() { Name = "PC" , Status = "Active"},
-            new() { Name = "Monitor", Status = "Active"},
-            new() { Name = "Laptop", Status = "Inactive" },
-            new() { Name = "Mouse", Status = "Inactive" },
-            new() { Name = "Headphones", Description= "Working headphones with microphone", Price= 99.99m, Status = "Inactive" }
-        ];
+        private List<Item> GetTestItems()
+        {
+            return new List<Item> {
+                new Item { Name = "Monitor", Status = "Active" },
+                new Item { Name = "Laptop", Status = "Inactive" },
+                new Item { Name = "Mouse", Status = "Inactive" },
+                new Item { Name = "Headphones", Description = "Working headphones with microphone", Price = 99.99m, Status = "Inactive" }
+            };
+        }
 
         // Dispose DbContext after each test
         public void Dispose()
