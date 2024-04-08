@@ -1,0 +1,49 @@
+﻿@page "/categories"
+@using Microsoft.AspNetCore.Components.QuickGrid
+@inject UnitOfWork.IUnitOfWork unitOfWork
+@using pms.app.Models
+
+<PageTitle>Categories</PageTitle>
+
+<h1>Categories</h1>
+
+<p>
+    <a href="categories/create">Add Category</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Created</th>
+            <th>Updated</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var category in Categories)
+        {
+            <tr>
+                <td>@category.Name</td>
+                <td>@category.Description</td>
+                <td>@category.Created</td>
+                <td>@category.Updated</td>
+                <td>
+                    <a href="@($"categories/edit?id={category.Id}")">Edit</a> |
+                    <a href="@($"categories/details?id={category.Id}")">Details</a> |
+                    <a href="@($"categories/delete?id={category.Id}")">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@code {
+    List<Category> Categories { get; set; } = new List<Category>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Categories = await unitOfWork.GetRepository<Category>().GetAllAsync();
+    }
+}

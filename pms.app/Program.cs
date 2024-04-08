@@ -39,6 +39,8 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
 
+builder.Services.AddQuickGridEntityFrameworkAdapter(); ;
+
 // Add developer exception page for database errors
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
