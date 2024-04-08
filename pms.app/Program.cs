@@ -6,14 +6,13 @@ using pms.app.Components.Account;
 using pms.app.Data;
 using pms.app.Models;
 using pms.app.Repository;
+using pms.app.Seed;
 using pms.app.UnitOfWork;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 // Add services to the container.
 
-// Register Razor Components
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 
 // Add authentication state provider for Blazor components
@@ -29,32 +28,9 @@ builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
 // Add Identity services
-builder.Services.AddIdentityCore<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
-
-
-
-// Configure authentication services
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
-    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-    options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
-}).AddCookie(IdentityConstants.ApplicationScheme, options =>
-   {
-       options.LoginPath = "/Account/Login";
-       options.AccessDeniedPath = "/Account/AccessDenied";
-   }).AddCookie("Identity.External", options =>
-{
-    // Configure options for external sign-in cookie
-    options.Cookie.Name = "Identity.External";
-    options.Cookie.SameSite = SameSiteMode.None;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.None;
-});
-
-// Add authorization services
-builder.Services.AddAuthorization();
 
 // Get database connection string
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -82,8 +58,16 @@ builder.Services.AddScoped<IRepository<Category>, Repository<Category>>();
 builder.Services.AddScoped<IRepository<Customer>, Repository<Customer>>();
 builder.Services.AddScoped<IRepository<CustomerItem>, Repository<CustomerItem>>();
 
-
 var app = builder.Build();
+
+
+// Seed
+using (var scope = app.Services.CreateScope())
+{
+    // Seed roles
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    await RoleSeeder.SeedDefaultRolesAsync(roleManager);
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -98,7 +82,6 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-//app.UseAntiforgery();
 
 // Map Blazor components and enable interactive server render mode
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
@@ -113,5 +96,6 @@ app.UseAuthorization();
 
 // Add anti-forgery middleware here
 app.UseAntiforgery();
+
 
 app.Run();

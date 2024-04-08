@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using pms.app.Models;
@@ -20,6 +21,22 @@ namespace pms.app.Data
 
         public ApplicationDbContext() : base()
         {
+        }
+
+        public static class ApplicationDbContextSeed
+        {
+            public static async Task SeedDefaultRolesAsync(RoleManager<IdentityRole> roleManager)
+            {
+                if (!await roleManager.RoleExistsAsync("Admin"))
+                {
+                    await roleManager.CreateAsync(new IdentityRole("Admin"));
+                }
+
+                if (!await roleManager.RoleExistsAsync("User"))
+                {
+                    await roleManager.CreateAsync(new IdentityRole("User"));
+                }
+            }
         }
     }
 }
