@@ -9,7 +9,7 @@
         public decimal Price { get; set; }
         public string Status { get; set; }
         public DateTime Created { get; set; } = DateTime.Now;
-        public DateTime Updated { get; set; }
+        public DateTime? Updated { get; set; }
         // Foreign key property
         public int? CategoryId { get; set; }
 

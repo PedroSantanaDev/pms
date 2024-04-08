@@ -60,20 +60,23 @@ var app = builder.Build();
  */
 using (var scope = app.Services.CreateScope())
 {
-    // Seed roles
+    // Seed Roles
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     await RoleSeeder.SeedDefaultRolesAsync(roleManager);
 
-    // Seed users
+    // Seed Users
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
     await UserSeeder.SeedUsersAndRolesAsync(userManager, roleManager);
 
-    // Seed categories
+    // Seed Categories
     var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
     await CategorySeeder.SeedCategoriesAsync(unitOfWork);
 
-    // See Customers
+    // Seed Customers
     await CustomerSeeder.SeedCustomersAsync(unitOfWork);
+
+    //Seed Items
+    await ItemSeeder.SeedItemsAsync(unitOfWork);
 }
 
 // Configure the HTTP request pipeline.
