@@ -64,6 +64,10 @@ using (var scope = app.Services.CreateScope())
     // Seed users
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
     await UserSeeder.SeedUsersAndRolesAsync(userManager, roleManager);
+
+    // Seed categories
+    var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+    await CategorySeeder.SeedCategoriesAsync(unitOfWork);
 }
 
 // Configure the HTTP request pipeline.
