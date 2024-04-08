@@ -75,8 +75,11 @@ using (var scope = app.Services.CreateScope())
     // Seed Customers
     await CustomerSeeder.SeedCustomersAsync(unitOfWork);
 
-    //Seed Items
+    // Seed Items
     await ItemSeeder.SeedItemsAsync(unitOfWork);
+
+    // Seed customer items
+    await CustomerItemSeeder.SeedCustomerItemsAsync(unitOfWork);
 }
 
 // Configure the HTTP request pipeline.
