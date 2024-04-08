@@ -54,7 +54,10 @@ builder.Services.AddScoped<IRepository<CustomerItem>, Repository<CustomerItem>>(
 
 var app = builder.Build();
 
-// Seed
+/*
+ * Seeding the database.
+ * This is so when a user runs the project for the first time they have some test data
+ */
 using (var scope = app.Services.CreateScope())
 {
     // Seed roles
@@ -68,6 +71,9 @@ using (var scope = app.Services.CreateScope())
     // Seed categories
     var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
     await CategorySeeder.SeedCategoriesAsync(unitOfWork);
+
+    // See Customers
+    await CustomerSeeder.SeedCustomersAsync(unitOfWork);
 }
 
 // Configure the HTTP request pipeline.
