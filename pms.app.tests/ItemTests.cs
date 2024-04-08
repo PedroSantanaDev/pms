@@ -195,6 +195,7 @@ namespace pms.app.tests
         public async Task Delete_Item_Should_Delete_Item_If_Exists_Test()
         {
             var items = await _unitOfWork.GetRepository<Item>().GetAllAsync();
+
             int id = items.First().Id;
 
             var item = await _unitOfWork.GetRepository<Item>().GetByIdAsync(id);
@@ -202,6 +203,20 @@ namespace pms.app.tests
             //Assert
             Assert.NotNull(item);
             Assert.IsType<Item>(item);
+
+            var customerItems = await _unitOfWork.GetRepository<CustomerItem>().GetAllAsync(i => i.ItemId == item.Id);
+            foreach (var customerItem in customerItems)
+            {
+                await _unitOfWork.GetRepository<CustomerItem>().DeleteAsync(customerItem.Id);
+            }
+
+            // Set CategoryId to null if it's not already null
+            if (item.CategoryId != null)
+            {
+                item.CategoryId = null;
+                item.Updated = DateTime.Now;
+                await _unitOfWork.GetRepository<Item>().UpdateAsync(item);
+            }
 
             await _unitOfWork.GetRepository<Item>().DeleteAsync(id);
 

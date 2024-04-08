@@ -1,4 +1,5 @@
 ﻿using pms.app.Data;
+using pms.app.Enums;
 using pms.app.Models;
 using System.Linq.Expressions;
 
@@ -169,10 +170,29 @@ namespace pms.app.tests
         [Fact]
         public async Task Delete_Customer_Should_Delete_Customer_If_Exists_Test()
         {
-            var customers = await _unitOfWork.GetRepository<Customer>().GetAllAsync();
+            // Set up filter
+            Expression<Func<Customer, bool>> filter = i => i.CustomerItems != null && i.CustomerItems.Count > 0;
+
+            Func<IQueryable<Customer>, IOrderedQueryable<Customer>> orderBy = q => q.OrderBy(i => i.Id);
+
+            // Set up includeProperties
+            string includeProperties = "CustomerItems";
+
+            // Set up pagination
+            int page = 1;
+            int pageSize = 2;
+
+            var customers = await _unitOfWork.GetRepository<Customer>().GetAllAsync(
+                filter,
+                orderBy,
+                includeProperties,
+                page,
+                pageSize
+            );
+
             int id = customers.First().Id;
 
-            var customer = await _unitOfWork.GetRepository<Customer>().GetByIdAsync(id);
+            var customer = customers.First();
 
             //Assert
             Assert.NotNull(customer);
@@ -184,8 +204,6 @@ namespace pms.app.tests
                 // Update CustomerItem reference for each item associated with this customer
                 foreach (var customerItem in customerItems)
                 {
-                    customerItem.CustomerId = null;
-                    await _unitOfWork.GetRepository<CustomerItem>().UpdateAsync(customerItem);
                     await _unitOfWork.GetRepository<CustomerItem>().DeleteAsync(customerItem.Id);
 
                     var deletedCustomerItem = await _unitOfWork.GetRepository<CustomerItem>().GetByIdAsync(customerItem.Id);
@@ -204,10 +222,10 @@ namespace pms.app.tests
         private List<Customer> GetTestCustomers()
         {
             return new List<Customer> {
-                new Customer { Name = "JJ Automotive", Status = "Active" },
-                new Customer { Name = "LL Auto Care", Status = "Active"},
-                new Customer { Name = "Peter's Book Store", Status = "Inactive" },
-                new Customer { Name = "May Computer Repair", Status = "Inactive" }
+                new Customer { Name = "JJ Automotive", Status = Status.Statuses.Active.ToString() },
+                new Customer { Name = "LL Auto Care", Status = Status.Statuses.Active.ToString()},
+                new Customer { Name = "Peter's Book Store", Status = Status.Statuses.Innactive.ToString() },
+                new Customer { Name = "May Computer Repair", Status = Status.Statuses.Innactive.ToString() }
             };
         }
 

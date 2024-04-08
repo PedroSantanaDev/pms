@@ -26,13 +26,13 @@ namespace pms.app.Seed
 
             var random = new Random();
 
-            var customerItemsToAdd = new List<CustomerItem>();
-
             DateTime currentDate = DateTime.Now;
 
             var counter = 0;
             foreach (var customer in customers)
             {
+                var customerItemsToAdd = new List<CustomerItem>();
+
                 DateTime assignedDate = currentDate.AddDays(-7 * counter); // Subtract 7 days for each item
 
                 // Choose a random number of items to assign to the customer
@@ -57,10 +57,11 @@ namespace pms.app.Seed
                         AssignedDate = assignedDate
                     });
                 }
+                customer.CustomerItems = customerItemsToAdd;
+
+                await unitOfWork.GetRepository<Customer>().UpdateAsync(customer);
                 counter++;
             }
-
-            await unitOfWork.GetRepository<CustomerItem>().AddRangeAsync(customerItemsToAdd);
         }
     }
 }
