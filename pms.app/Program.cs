@@ -28,7 +28,7 @@ builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
 // Add Identity services
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
@@ -42,12 +42,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Add developer exception page for database errors
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-// Add ApplicationUser class and configure Identity services
-builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddSignInManager()
-    .AddDefaultTokenProviders();
-
 // Add custom email sender
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
@@ -60,13 +54,16 @@ builder.Services.AddScoped<IRepository<CustomerItem>, Repository<CustomerItem>>(
 
 var app = builder.Build();
 
-
 // Seed
 using (var scope = app.Services.CreateScope())
 {
     // Seed roles
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     await RoleSeeder.SeedDefaultRolesAsync(roleManager);
+
+    // Seed users
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+    await UserSeeder.SeedUsersAndRolesAsync(userManager, roleManager);
 }
 
 // Configure the HTTP request pipeline.

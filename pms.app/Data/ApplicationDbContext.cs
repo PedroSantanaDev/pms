@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using pms.app.Models;
@@ -7,6 +6,8 @@ namespace pms.app.Data
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+
         public DbSet<Item> Items { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Customer> Customers { get; set; }
@@ -22,21 +23,12 @@ namespace pms.app.Data
         public ApplicationDbContext() : base()
         {
         }
-
-        public static class ApplicationDbContextSeed
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            public static async Task SeedDefaultRolesAsync(RoleManager<IdentityRole> roleManager)
-            {
-                if (!await roleManager.RoleExistsAsync("Admin"))
-                {
-                    await roleManager.CreateAsync(new IdentityRole("Admin"));
-                }
+            base.OnModelCreating(builder);
 
-                if (!await roleManager.RoleExistsAsync("User"))
-                {
-                    await roleManager.CreateAsync(new IdentityRole("User"));
-                }
-            }
+            // Configure Identity to use ApplicationUser with a different table name
+            builder.Entity<ApplicationUser>().ToTable("ApplicationUsers");
         }
     }
 }
