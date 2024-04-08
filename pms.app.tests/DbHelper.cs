@@ -8,7 +8,7 @@ namespace pms.app.tests
         public static DbContextOptions<pms.app.Data.ApplicationDbContext> GetDbOptions()
         {
             // Set up the test database connection string
-            var connectionString = "Data Source=pms_test.db";
+            var connectionString = "Data Source=pms.db";
 
             // Set up the DbContext with the test database connection string
             var dbContextOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
