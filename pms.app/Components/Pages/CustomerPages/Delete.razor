@@ -1,8 +1,13 @@
 ﻿@page "/customers/delete"
-@inject pms.app.Data.ApplicationDbContext DB
-@using pms.app.Models
-@inject NavigationManager NavigationManager
 @using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Authorization
+@using pms.app.Models
+@using Microsoft.AspNetCore.Antiforgery
+@using System.Linq.Expressions;
+
+@inject UnitOfWork.IUnitOfWork unitOfWork
+@inject NavigationManager NavigationManager
+@attribute [Authorize]
 
 <PageTitle>Delete</PageTitle>
 
@@ -64,7 +69,28 @@
 
     protected override async Task OnInitializedAsync()
     {
-        customer = await DB.Customers.FirstOrDefaultAsync(m => m.Id == Id);
+
+        // Set up filter
+        Expression<Func<Customer, bool>> filter = i => i.Id == Id;
+
+        Func<IQueryable<Customer>, IOrderedQueryable<Customer>> orderBy = q => q.OrderByDescending(i => i.Created).ThenByDescending(i => i.Updated.HasValue ? i.Updated : DateTime.MinValue);
+
+        // Set up includeProperties
+        string includeProperties = "CustomerItems";
+
+        // Set up pagination
+        int page = 1;
+        int pageSize = 1;
+
+        var customers = await unitOfWork.GetRepository<Customer>().GetAllAsync(
+            filter,
+            orderBy,
+            includeProperties,
+            page,
+            pageSize
+        );
+
+        customer = customers.FirstOrDefault();
 
         if (customer is null)
         {
@@ -74,8 +100,23 @@
 
     public async Task DeleteCustomer()
     {
-        DB.Customers.Remove(customer!);
-        await DB.SaveChangesAsync();
+
+        if (customer != null)
+        {
+            // Remove the category from associated items
+            if (customer.CustomerItems != null && customer.CustomerItems.Count > 0)
+            {
+                foreach (var item in customer.CustomerItems)
+                {
+                    item.CustomerId = null;
+                    item.ItemId = null;
+                    await unitOfWork.GetRepository<CustomerItem>().UpdateAsync(item);
+                    await unitOfWork.GetRepository<CustomerItem>().DeleteAsync(item.Id);
+                }
+            }
+
+            await unitOfWork.GetRepository<Customer>().DeleteAsync(customer.Id);
+        }
         NavigationManager.NavigateTo("/customers");
     }
 }

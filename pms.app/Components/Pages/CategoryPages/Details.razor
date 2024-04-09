@@ -3,6 +3,7 @@
 @using Microsoft.EntityFrameworkCore
 @using System.Linq.Expressions;
 @using pms.app.Models
+@using System.Globalization
 
 @inject UnitOfWork.IUnitOfWork unitOfWork
 @inject NavigationManager NavigationManager
@@ -29,6 +30,43 @@
             <dt class="col-sm-2">Updated</dt>
             <dd class="col-sm-10">@category.Updated</dd>
         </dl>
+
+        @if (category.Items.Any())
+        {
+            <h5>Category Items</h5>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Number (SKU)</th>
+                        <th>Name</th>                       
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var item in category.Items)
+                    {
+                        <tr>
+                            <td>@item.SKU</td>
+                            <td>@item.Name</td>                            
+                            <td>@category.Name</td>
+                            <td>@item.Price.ToString("C", CultureInfo.CurrentCulture)</td>
+                            <td>@item.Status</td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <tr>
+                <td colspan="2">No items assigned to this customer.</td>
+            </tr>
+        }
+
         <div>
             <a href="@($"/categories/edit?id={category.Id}")">Edit</a> |
             <a href="@($"/categories")">Back to List</a>

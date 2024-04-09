@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using pms.app.Models
 @using Microsoft.AspNetCore.Antiforgery
+@using System.Linq.Expressions;
 
 @inject UnitOfWork.IUnitOfWork unitOfWork
 @inject NavigationManager NavigationManager
@@ -52,7 +53,27 @@
 
     protected override async Task OnInitializedAsync()
     {
-        category = await unitOfWork.GetRepository<Category>().GetByIdAsync(Id);
+        // Set up filter
+        Expression<Func<Category, bool>> filter = i => i.Id == Id;
+
+        Func<IQueryable<Category>, IOrderedQueryable<Category>> orderBy = q => q.OrderByDescending(i => i.Created).ThenByDescending(i => i.Updated.HasValue ? i.Updated : DateTime.MinValue);
+
+        // Set up includeProperties
+        string includeProperties = "Items";
+
+        // Set up pagination
+        int page = 1;
+        int pageSize = 1;
+
+        var categories = await unitOfWork.GetRepository<Category>().GetAllAsync(
+            filter,
+            orderBy,
+            includeProperties,
+            page,
+            pageSize
+        );
+
+        category = categories.FirstOrDefault();
 
         if (category is null)
         {
