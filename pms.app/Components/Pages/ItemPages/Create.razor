@@ -1,7 +1,13 @@
 ﻿@page "/items/create"
-@inject pms.app.Data.ApplicationDbContext DB
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Authorization
 @using pms.app.Models
+@using Microsoft.AspNetCore.Antiforgery
+@using pms.app.Enums;
+
+@inject UnitOfWork.IUnitOfWork unitOfWork
 @inject NavigationManager NavigationManager
+@attribute [Authorize]
 
 <PageTitle>Create</PageTitle>
 
@@ -26,34 +32,37 @@
             </div>        
             <div class="mb-3">
                 <label for="description" class="form-label">Description:</label> 
-                <InputText id="description" @bind-Value="Item.Description" class="form-control" /> 
+                <InputTextArea rows="4" id="description" @bind-Value="Item.Description" class="form-control" /> 
                 <ValidationMessage For="() => Item.Description" class="text-danger" /> 
             </div>        
             <div class="mb-3">
                 <label for="price" class="form-label">Price:</label> 
                 <InputNumber id="price" @bind-Value="Item.Price" class="form-control" /> 
                 <ValidationMessage For="() => Item.Price" class="text-danger" /> 
-            </div>        
+            </div>
             <div class="mb-3">
-                <label for="status" class="form-label">Status:</label> 
-                <InputText id="status" @bind-Value="Item.Status" class="form-control" /> 
-                <ValidationMessage For="() => Item.Status" class="text-danger" /> 
-            </div>        
+                <label for="status" class="form-label">Status:</label>
+                <InputSelect id="status" @bind-Value="Item.Status" class="form-control">
+                    @foreach (var statusOption in Status.GetStatusOptions())
+                    {
+                        <option value="@statusOption">@statusOption</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="() => Item.Status" class="text-danger" />
+            </div>
+
             <div class="mb-3">
-                <label for="created" class="form-label">Created:</label> 
-                <InputDate id="created" @bind-Value="Item.Created" class="form-control" /> 
-                <ValidationMessage For="() => Item.Created" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                <label for="updated" class="form-label">Updated:</label> 
-                <InputDate id="updated" @bind-Value="Item.Updated" class="form-control" /> 
-                <ValidationMessage For="() => Item.Updated" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                <label for="categoryid" class="form-label">CategoryId:</label> 
-                <InputNumber id="categoryid" @bind-Value="Item.CategoryId" class="form-control" /> 
-                <ValidationMessage For="() => Item.CategoryId" class="text-danger" /> 
-            </div>        
+                <label for="category" class="form-label">Category:</label>
+                <InputSelect id="category" @bind-Value="Item.CategoryId" class="form-control">
+                    <option value="0"></option>
+                    @foreach (var category in Categories)
+                    {
+                        <option value="@category.Id">@category.Name</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="@(() => Item.CategoryId)" class="text-danger" />
+            </div>
+
             <button type="submit" class="btn btn-primary">Create</button>
         </EditForm>
     </div>
@@ -68,11 +77,23 @@
     [SupplyParameterFromForm]
     public Item Item { get; set; } = new();
 
+    List<Category> Categories { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Categories ??= await unitOfWork.GetRepository<Category>().GetAllAsync();
+    }
+
     // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
     public async Task AddItem()
     {
-        DB.Items.Add(Item);
-        await DB.SaveChangesAsync();
+        if (Item.CategoryId == 0)
+        {
+            Item.CategoryId = null;
+        }
+        //Item.CustomerItems = null;
+        Item.Created = DateTime.Now;
+        await unitOfWork.GetRepository<Item>().AddAsync(Item);
         NavigationManager.NavigateTo("/items");
     }
 }

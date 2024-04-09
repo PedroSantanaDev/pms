@@ -44,7 +44,7 @@
             <dd class="col-sm-10">@item.Updated</dd>
         </dl>
 
-        @if (item.CustomerItems.Any())
+       <!-- @if (item.CustomerItems.Any())
         {
             <h5>Item Customers</h5>
             <table class="table">
@@ -70,7 +70,7 @@
                     }
                 </tbody>
             </table>
-        }
+        } -->
 
 
         <div>
@@ -94,7 +94,7 @@
         Func<IQueryable<Item>, IOrderedQueryable<Item>> orderBy = null;
 
         // Set up includeProperties
-        string includeProperties = "Category,CustomerItems,CustomerItems.Customer";
+        string includeProperties = "Category";
 
         // Set up pagination
         int page = 1;

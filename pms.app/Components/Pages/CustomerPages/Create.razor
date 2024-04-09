@@ -1,7 +1,13 @@
 ﻿@page "/customers/create"
-@inject pms.app.Data.ApplicationDbContext DB
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Authorization
 @using pms.app.Models
+@using Microsoft.AspNetCore.Antiforgery
+@using pms.app.Enums;
+
+@inject UnitOfWork.IUnitOfWork unitOfWork
 @inject NavigationManager NavigationManager
+@attribute [Authorize]
 
 <PageTitle>Create</PageTitle>
 
@@ -9,7 +15,7 @@
 
 <h4>Customer</h4>
 <hr />
-<!--
+
 <div class="row">
     <div class="col-md-4">
         <EditForm method="post" Model="Customer" OnValidSubmit="AddCustomer" FormName="create" Enhance>
@@ -41,24 +47,19 @@
                 <ValidationMessage For="() => Customer.City" class="text-danger" /> 
             </div>        
             <div class="mb-3">
-                <label for="status" class="form-label">Status:</label> 
-                <InputText id="status" @bind-Value="Customer.Status" class="form-control" /> 
-                <ValidationMessage For="() => Customer.Status" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                <label for="created" class="form-label">Created:</label> 
-                <InputDate id="created" @bind-Value="Customer.Created" class="form-control" /> 
-                <ValidationMessage For="() => Customer.Created" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                <label for="updated" class="form-label">Updated:</label> 
-                <InputDate id="updated" @bind-Value="Customer.Updated" class="form-control" /> 
-                <ValidationMessage For="() => Customer.Updated" class="text-danger" /> 
-            </div>        
+                <label for="status" class="form-label">Status:</label>
+                <InputSelect id="status" @bind-Value="Customer.Status" class="form-control">
+                    @foreach (var statusOption in Status.GetStatusOptions())
+                    {
+                        <option value="@statusOption">@statusOption</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="() => Customer.Status" class="text-danger" />
+            </div>
             <button type="submit" class="btn btn-primary">Create</button>
         </EditForm>
     </div>
-</div> -->
+</div> 
 
 <div>
     <a href="/customers">Back to List</a>
@@ -66,14 +67,15 @@
 
 @code {
 
-    //[SupplyParameterFromForm]
-   // public Customer Customer { get; set; } = new();
+  [SupplyParameterFromForm]
+   public Customer Customer { get; set; } = new();
 
     // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
-    /*public async Task AddCustomer()
+    public async Task AddCustomer()
     {
-        DB.Customers.Add(Customer);
-        await DB.SaveChangesAsync();
+        Customer.Created = DateTime.Now;
+        await unitOfWork.GetRepository<Customer>().AddAsync(Customer);
+
         NavigationManager.NavigateTo("/customers");
-    }*/
+    }
 }
