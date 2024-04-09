@@ -7,5 +7,10 @@
             Active,
             Innactive,
         }
+
+        public static IEnumerable<string> GetStatusOptions()
+        {
+            return Enum.GetNames(typeof(Statuses));
+        }
     }
 }

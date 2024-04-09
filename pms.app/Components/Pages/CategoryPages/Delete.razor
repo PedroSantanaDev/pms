@@ -16,45 +16,45 @@
 <div>
     <h4>Category</h4>
     <hr />
-    @if (Category is null)
+    @if (category is null)
     {
         <p><em>Loading...</em></p>
     }
     else {
         <dl class="row">
             <dt class="col-sm-2">Name</dt>
-            <dd class="col-sm-10">@Category.Name</dd>
+            <dd class="col-sm-10">@category.Name</dd>
         </dl>
         <dl class="row">
             <dt class="col-sm-2">Description</dt>
-            <dd class="col-sm-10">@Category.Description</dd>
+            <dd class="col-sm-10">@category.Description</dd>
         </dl>
         <dl class="row">
             <dt class="col-sm-2">Created</dt>
-            <dd class="col-sm-10">@Category.Created</dd>
+            <dd class="col-sm-10">@category.Created</dd>
         </dl>
         <dl class="row">
             <dt class="col-sm-2">Updated</dt>
-            <dd class="col-sm-10">@Category.Updated</dd>
+            <dd class="col-sm-10">@category.Updated</dd>
         </dl>
-        <EditForm method="post" Model="Category" OnValidSubmit="DeleteCategory" FormName="delete" Enhance>
-            <button type="submit" class="btn btn-danger" disabled="@(Category is null)">Delete</button> |
+        <EditForm method="post" Model="category" OnValidSubmit="DeleteCategory" FormName="delete" Enhance>
+            <button type="submit" class="btn btn-danger" disabled="@(category is null)">Delete</button> |
             <a href="/categories">Back to List</a>
         </EditForm>
     }
 </div>
 
 @code {
-    Category? Category;
+    Category? category;
 
     [SupplyParameterFromQuery]
     public int Id { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        Category = await unitOfWork.GetRepository<Category>().GetByIdAsync(Id);
+        category = await unitOfWork.GetRepository<Category>().GetByIdAsync(Id);
 
-        if (Category is null)
+        if (category is null)
         {
             NavigationManager.NavigateTo("notfound");
         }
@@ -62,12 +62,12 @@
 
     public async Task DeleteCategory()
     {
-        if (Category != null)
+        if (category != null)
         {
             // Remove the category from associated items
-            if (Category.Items != null && Category.Items.Count > 0)
+            if (category.Items != null && category.Items.Count > 0)
             {
-                foreach (var item in Category.Items)
+                foreach (var item in category.Items)
                 {
                     item.CategoryId = null;
                     await unitOfWork.GetRepository<Item>().UpdateAsync(item);
@@ -75,7 +75,7 @@
             }
 
             // Delete the category
-            await unitOfWork.GetRepository<Category>().DeleteAsync(Category.Id);
+            await unitOfWork.GetRepository<Category>().DeleteAsync(category.Id);
 
             // Navigate to the categories page
             NavigationManager.NavigateTo("/categories");

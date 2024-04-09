@@ -1,11 +1,15 @@
-﻿namespace pms.app.Models
+﻿using System.ComponentModel.DataAnnotations;
+namespace pms.app.Models
 {
     public class Item
     {
         public int Id { get; set; }
+        [Required(ErrorMessage = "Item SKU is required.")]
         public int SKU { get; set; }
+        [Required(ErrorMessage = "Item Name is required.")]
         public string Name { get; set; }
         public string? Description { get; set; }
+        [Required(ErrorMessage = "Item Price is required.")]
         public decimal Price { get; set; }
         public string Status { get; set; }
         public DateTime Created { get; set; } = DateTime.Now;

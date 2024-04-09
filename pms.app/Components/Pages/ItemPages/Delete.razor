@@ -1,0 +1,132 @@
+﻿@page "/items/delete"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Authorization
+@using pms.app.Models
+@using Microsoft.AspNetCore.Antiforgery
+@using System.Linq.Expressions;
+
+@inject UnitOfWork.IUnitOfWork unitOfWork
+@inject NavigationManager NavigationManager
+@attribute [Authorize]
+<PageTitle>Delete</PageTitle>
+
+<h1>Delete</h1>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Item</h4>
+    <hr />
+    @if (item is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">SKU</dt>
+            <dd class="col-sm-10">@item.SKU</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">Name</dt>
+            <dd class="col-sm-10">@item.Name</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">Description</dt>
+            <dd class="col-sm-10">@item.Description</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">Price</dt>
+            <dd class="col-sm-10">@item.Price</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">Status</dt>
+            <dd class="col-sm-10">@item.Status</dd>
+        </dl>
+
+        @if(item.Category != null){
+            <dl class="row">
+                <dt class="col-sm-2">Category Id</dt>
+                <dd class="col-sm-10">@item.CategoryId</dd>
+            </dl>
+            <dl class="row">
+                <dt class="col-sm-2">Category Name</dt>
+                <dd class="col-sm-10">@item.Category.Name</dd>
+            </dl>
+        }
+        <dl class="row">
+            <dt class="col-sm-2">Created</dt>
+            <dd class="col-sm-10">@item.Created</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">Updated</dt>
+            <dd class="col-sm-10">@item.Updated</dd>
+        </dl>
+        <EditForm method="post" Model="item" OnValidSubmit="DeleteItem" FormName="delete" Enhance>
+            <button type="submit" class="btn btn-danger" disabled="@(item is null)">Delete</button> |
+            <a href="/items">Back to List</a>
+        </EditForm>
+    }
+</div>
+
+@code {
+    Item? item;
+
+    [SupplyParameterFromQuery]
+    public int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        // Set up filter
+        Expression<Func<Item, bool>> filter = i => i.Id == Id;
+
+        Func<IQueryable<Item>, IOrderedQueryable<Item>> orderBy = null;
+
+        // Set up includeProperties
+        string includeProperties = "Category";
+
+        // Set up pagination
+        int page = 1;
+        int pageSize = 30;
+
+        var items = await unitOfWork.GetRepository<Item>().GetAllAsync(
+            filter,
+            orderBy,
+            includeProperties,
+            page,
+            pageSize
+        );
+
+
+
+        item = items.First();
+
+        if (item is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    public async Task DeleteItem()
+    {
+        if (item != null)
+        {
+            // Remove customers Items association to this item
+            var customerItems = await unitOfWork.GetRepository<CustomerItem>().GetAllAsync(i => i.ItemId == item.Id);
+            foreach (var customerItem in customerItems)
+            {
+                await unitOfWork.GetRepository<CustomerItem>().DeleteAsync(customerItem.Id);
+            }
+
+            // Remove the category from item
+            if (item.CategoryId != null)
+            {
+                item.CategoryId = null;
+                await unitOfWork.GetRepository<Item>().UpdateAsync(item);
+            }
+
+            // Delete the item
+            await unitOfWork.GetRepository<Item>().DeleteAsync(item.Id);          
+        }
+        NavigationManager.NavigateTo("/items");
+    }
+}

@@ -1,0 +1,78 @@
+﻿@page "/items/create"
+@inject pms.app.Data.ApplicationDbContext DB
+@using pms.app.Models
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h4>Item</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="Item" OnValidSubmit="AddItem" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" />
+            <div class="mb-3">
+                <label for="sku" class="form-label">SKU:</label> 
+                <InputNumber id="sku" @bind-Value="Item.SKU" class="form-control" /> 
+                <ValidationMessage For="() => Item.SKU" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="name" class="form-label">Name:</label> 
+                <InputText id="name" @bind-Value="Item.Name" class="form-control" /> 
+                <ValidationMessage For="() => Item.Name" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="description" class="form-label">Description:</label> 
+                <InputText id="description" @bind-Value="Item.Description" class="form-control" /> 
+                <ValidationMessage For="() => Item.Description" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="price" class="form-label">Price:</label> 
+                <InputNumber id="price" @bind-Value="Item.Price" class="form-control" /> 
+                <ValidationMessage For="() => Item.Price" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="status" class="form-label">Status:</label> 
+                <InputText id="status" @bind-Value="Item.Status" class="form-control" /> 
+                <ValidationMessage For="() => Item.Status" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="created" class="form-label">Created:</label> 
+                <InputDate id="created" @bind-Value="Item.Created" class="form-control" /> 
+                <ValidationMessage For="() => Item.Created" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="updated" class="form-label">Updated:</label> 
+                <InputDate id="updated" @bind-Value="Item.Updated" class="form-control" /> 
+                <ValidationMessage For="() => Item.Updated" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="categoryid" class="form-label">CategoryId:</label> 
+                <InputNumber id="categoryid" @bind-Value="Item.CategoryId" class="form-control" /> 
+                <ValidationMessage For="() => Item.CategoryId" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/items">Back to List</a>
+</div>
+
+@code {
+
+    [SupplyParameterFromForm]
+    public Item Item { get; set; } = new();
+
+    // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
+    public async Task AddItem()
+    {
+        DB.Items.Add(Item);
+        await DB.SaveChangesAsync();
+        NavigationManager.NavigateTo("/items");
+    }
+}

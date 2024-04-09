@@ -1,0 +1,81 @@
+﻿@page "/items"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Authorization
+@using pms.app.Models
+@using System.Linq.Expressions;
+
+@inject UnitOfWork.IUnitOfWork unitOfWork
+@inject NavigationManager NavigationManager
+@attribute [Authorize]
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="items/create">Create New</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Item Number (SKU)</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Category</th>
+            <th>Created</th>
+            <th>Update</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Items)
+        {
+            <tr>
+                <td>@item.SKU</td>
+                <td>@item.Name</td>
+                <td>@item.Description</td>
+                <td>@item.Price</td>
+                <td>@item.Status</td>
+                <td>@item.Category?.Name</td>
+                <td>@item.Created</td>
+                <td>@item.Updated</td>
+                <td>
+                    <a href="@($"items/edit?id={item.Id}")">Edit</a> |
+                    <a href="@($"items/details?id={item.Id}")">Details</a> |
+                    <a href="@($"items/delete?id={item.Id}")">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@code {
+    List<Item> Items { get; set; } = new List<Item>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Set up filter
+        Expression<Func<Item, bool>> filter = null;
+
+        Func<IQueryable<Item>, IOrderedQueryable<Item>> orderBy = q => q.OrderByDescending(i => i.Created).ThenByDescending(i => i.Updated.HasValue ? i.Updated : DateTime.MinValue);
+
+        // Set up includeProperties
+        string includeProperties = "Category";
+
+        // Set up pagination
+        int page = 1;
+        int pageSize = 30;
+
+        Items = await unitOfWork.GetRepository<Item>().GetAllAsync(
+            filter,
+            orderBy,
+            includeProperties,
+            page,
+            pageSize
+        );
+
+    }
+}
