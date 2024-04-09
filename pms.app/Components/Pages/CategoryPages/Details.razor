@@ -1,8 +1,9 @@
 ﻿@page "/categories/details"
-@inject pms.app.Data.ApplicationDbContext DB
-@using pms.app.Models
 @inject NavigationManager NavigationManager
 @using Microsoft.EntityFrameworkCore
+
+@inject UnitOfWork.IUnitOfWork unitOfWork
+@using pms.app.Models
 
 <PageTitle>Details</PageTitle>
 
@@ -41,7 +42,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        category = await DB.Categories.FirstOrDefaultAsync(m => m.Id == Id);
+        category = await unitOfWork.GetRepository<Category>().GetByIdAsync(Id);
 
         if (category is null)
         {

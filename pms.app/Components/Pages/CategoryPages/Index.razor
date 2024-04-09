@@ -1,7 +1,12 @@
 ﻿@page "/categories"
-@using Microsoft.AspNetCore.Components.QuickGrid
-@inject UnitOfWork.IUnitOfWork unitOfWork
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Authorization
 @using pms.app.Models
+@using System.Linq.Expressions;
+
+@inject UnitOfWork.IUnitOfWork unitOfWork
+@inject NavigationManager NavigationManager
+@attribute [Authorize]
 
 <PageTitle>Categories</PageTitle>
 
@@ -44,6 +49,25 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Categories = await unitOfWork.GetRepository<Category>().GetAllAsync();
+        // Set up filter
+        Expression<Func<Category, bool>> filter = null;
+
+        Func<IQueryable<Category>, IOrderedQueryable<Category>> orderBy = q => q.OrderByDescending(i => i.Created).ThenByDescending(i => i.Updated.HasValue ? i.Updated : DateTime.MinValue);
+
+        // Set up includeProperties
+        string includeProperties = "";
+
+        // Set up pagination
+        int page = 1;
+        int pageSize = 30;
+
+        Categories = await unitOfWork.GetRepository<Category>().GetAllAsync(
+            filter,
+            orderBy,
+            includeProperties,
+            page,
+            pageSize
+        );
+
     }
 }

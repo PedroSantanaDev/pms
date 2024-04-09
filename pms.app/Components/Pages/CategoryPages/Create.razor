@@ -1,7 +1,12 @@
 ﻿@page "/categories/create"
-@inject pms.app.Data.ApplicationDbContext DB
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Authorization
 @using pms.app.Models
+@using Microsoft.AspNetCore.Antiforgery
+
+@inject UnitOfWork.IUnitOfWork unitOfWork
 @inject NavigationManager NavigationManager
+@attribute [Authorize]
 
 <PageTitle>Create</PageTitle>
 
@@ -11,29 +16,19 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <EditForm method="post" Model="Category" OnValidSubmit="AddCategory" FormName="create" Enhance>
+        <EditForm method="post" Model="Category" OnValidSubmit="AddCategory" FormName="create">
             <DataAnnotationsValidator />
-            <ValidationSummary class="text-danger" />
+            <input type="hidden" name="Category.Id" value="@Category.Id" />
             <div class="mb-3">
-                <label for="name" class="form-label">Name:</label> 
-                <InputText id="name" @bind-Value="Category.Name" class="form-control" /> 
-                <ValidationMessage For="() => Category.Name" class="text-danger" /> 
-            </div>        
+                <label for="name" class="form-label">Name:</label>
+                <InputText id="name" @bind-Value="Category.Name" class="form-control" />
+                <ValidationMessage For="() => Category.Name" class="text-danger" />
+            </div>
             <div class="mb-3">
-                <label for="description" class="form-label">Description:</label> 
-                <InputText id="description" @bind-Value="Category.Description" class="form-control" /> 
-                <ValidationMessage For="() => Category.Description" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                <label for="created" class="form-label">Created:</label> 
-                <InputDate id="created" @bind-Value="Category.Created" class="form-control" /> 
-                <ValidationMessage For="() => Category.Created" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                <label for="updated" class="form-label">Updated:</label> 
-                <InputDate id="updated" @bind-Value="Category.Updated" class="form-control" /> 
-                <ValidationMessage For="() => Category.Updated" class="text-danger" /> 
-            </div>        
+                <label for="description" class="form-label">Description:</label>
+                <InputTextArea rows="4" id="description" @bind-Value="Category.Description" class="form-control" />
+                <ValidationMessage For="() => Category.Description" class="text-danger" />
+            </div>
             <button type="submit" class="btn btn-primary">Create</button>
         </EditForm>
     </div>
@@ -44,15 +39,15 @@
 </div>
 
 @code {
-
     [SupplyParameterFromForm]
-    public Category Category { get; set; } = new();
+    public Category Category { get; set; } = new Category();
 
     // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
     public async Task AddCategory()
     {
-        DB.Categories.Add(Category);
-        await DB.SaveChangesAsync();
+        Category.Created = DateTime.Now;
+        await unitOfWork.GetRepository<Category>().AddAsync(Category);
+
         NavigationManager.NavigateTo("/categories");
     }
 }

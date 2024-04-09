@@ -1,8 +1,12 @@
 ﻿@page "/categories/delete"
-@inject pms.app.Data.ApplicationDbContext DB
-@using pms.app.Models
-@inject NavigationManager NavigationManager
 @using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Authorization
+@using pms.app.Models
+@using Microsoft.AspNetCore.Antiforgery
+
+@inject UnitOfWork.IUnitOfWork unitOfWork
+@inject NavigationManager NavigationManager
+@attribute [Authorize]
 
 <PageTitle>Delete</PageTitle>
 
@@ -12,45 +16,45 @@
 <div>
     <h4>Category</h4>
     <hr />
-    @if (category is null)
+    @if (Category is null)
     {
         <p><em>Loading...</em></p>
     }
     else {
         <dl class="row">
             <dt class="col-sm-2">Name</dt>
-            <dd class="col-sm-10">@category.Name</dd>
+            <dd class="col-sm-10">@Category.Name</dd>
         </dl>
         <dl class="row">
             <dt class="col-sm-2">Description</dt>
-            <dd class="col-sm-10">@category.Description</dd>
+            <dd class="col-sm-10">@Category.Description</dd>
         </dl>
         <dl class="row">
             <dt class="col-sm-2">Created</dt>
-            <dd class="col-sm-10">@category.Created</dd>
+            <dd class="col-sm-10">@Category.Created</dd>
         </dl>
         <dl class="row">
             <dt class="col-sm-2">Updated</dt>
-            <dd class="col-sm-10">@category.Updated</dd>
+            <dd class="col-sm-10">@Category.Updated</dd>
         </dl>
-        <EditForm method="post" Model="category" OnValidSubmit="DeleteCategory" FormName="delete" Enhance>
-            <button type="submit" class="btn btn-danger" disabled="@(category is null)">Delete</button> |
+        <EditForm method="post" Model="Category" OnValidSubmit="DeleteCategory" FormName="delete" Enhance>
+            <button type="submit" class="btn btn-danger" disabled="@(Category is null)">Delete</button> |
             <a href="/categories">Back to List</a>
         </EditForm>
     }
 </div>
 
 @code {
-    Category? category;
+    Category? Category;
 
     [SupplyParameterFromQuery]
     public int Id { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        category = await DB.Categories.FirstOrDefaultAsync(m => m.Id == Id);
+        Category = await unitOfWork.GetRepository<Category>().GetByIdAsync(Id);
 
-        if (category is null)
+        if (Category is null)
         {
             NavigationManager.NavigateTo("notfound");
         }
@@ -58,8 +62,23 @@
 
     public async Task DeleteCategory()
     {
-        DB.Categories.Remove(category!);
-        await DB.SaveChangesAsync();
-        NavigationManager.NavigateTo("/categories");
+        if (Category != null)
+        {
+            // Remove the category from associated items
+            if (Category.Items != null && Category.Items.Count > 0)
+            {
+                foreach (var item in Category.Items)
+                {
+                    item.CategoryId = null;
+                    await unitOfWork.GetRepository<Item>().UpdateAsync(item);
+                }
+            }
+
+            // Delete the category
+            await unitOfWork.GetRepository<Category>().DeleteAsync(Category.Id);
+
+            // Navigate to the categories page
+            NavigationManager.NavigateTo("/categories");
+        }
     }
 }

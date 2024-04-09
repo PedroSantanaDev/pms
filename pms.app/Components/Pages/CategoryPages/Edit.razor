@@ -1,8 +1,14 @@
 ﻿@page "/Categories/edit"
-@inject pms.app.Data.ApplicationDbContext DB
-@using pms.app.Models
-@inject NavigationManager NavigationManager
+
 @using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Authorization
+@using pms.app.Models
+@using Microsoft.AspNetCore.Antiforgery
+
+@inject UnitOfWork.IUnitOfWork unitOfWork
+@inject NavigationManager NavigationManager
+@attribute [Authorize]
+
 
 <PageTitle>Edit</PageTitle>
 
@@ -20,7 +26,6 @@ else
         <div class="col-md-4">
             <EditForm method="post" Model="Category" OnValidSubmit="UpdateCategory" FormName="edit" Enhance>
                 <DataAnnotationsValidator />
-                <ValidationSummary />
                 <input type="hidden" name="Category.Id" value="@Category.Id" />
                 <div class="mb-3">
                     <label for="name" class="form-label">Name:</label>
@@ -29,18 +34,13 @@ else
                 </div>
                 <div class="mb-3">
                     <label for="description" class="form-label">Description:</label>
-                    <InputText id="description" @bind-Value="Category.Description" class="form-control" />
+                    <InputTextArea rows="4" id="description" @bind-Value="Category.Description" class="form-control" />
                     <ValidationMessage For="() => Category.Description" class="text-danger" />
                 </div>
-                <div class="mb-3">
+               <div class="mb-3">
                     <label for="created" class="form-label">Created:</label>
-                    <InputDate id="created" @bind-Value="Category.Created" class="form-control" />
+                    <InputDate id="created" @bind-Value="Category.Created" class="form-control" readonly />
                     <ValidationMessage For="() => Category.Created" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="updated" class="form-label">Updated:</label>
-                    <InputDate id="updated" @bind-Value="Category.Updated" class="form-control" />
-                    <ValidationMessage For="() => Category.Updated" class="text-danger" />
                 </div>
                 <button type="submit" class="btn btn-primary">Save</button>
             </EditForm>
@@ -61,27 +61,31 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        Category ??= await DB.Categories.FirstOrDefaultAsync(m => m.Id == Id);
+        Category ??= await unitOfWork.GetRepository<Category>().GetByIdAsync(Id);
 
         if (Category is null)
         {
             NavigationManager.NavigateTo("notfound");
         }
     }
-
+        
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more details, see https://aka.ms/RazorPagesCRUD.
     public async Task UpdateCategory()
     {
-        DB.Attach(Category!).State = EntityState.Modified;
 
         try
         {
-            await DB.SaveChangesAsync();
+            if (Category != null)
+            {
+                Category.Updated = DateTime.Now;
+                await unitOfWork.GetRepository<Category>().UpdateAsync(Category);
+            }      
         }
         catch (DbUpdateConcurrencyException)
         {
-            if (!CategoryExists(Category!.Id))
+            var categoryExits = await CategoryExists(Category!.Id);
+            if (categoryExits)
             {
                 NavigationManager.NavigateTo("notfound");
             }
@@ -94,8 +98,14 @@ else
         NavigationManager.NavigateTo("/categories");
     }
 
-    bool CategoryExists(int id)
+    private async Task<bool> CategoryExists(int id)
     {
-        return DB.Categories.Any(e => e.Id == id);
+        var category = await unitOfWork.GetRepository<Category>().GetByIdAsync(id);
+
+        if (category == null)
+        {
+            return false;
+        }
+        return true;
     }
 }
