@@ -1,0 +1,78 @@
+﻿@page "/customers"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Authorization
+@using pms.app.Models
+@using System.Linq.Expressions;
+
+@inject UnitOfWork.IUnitOfWork unitOfWork
+@inject NavigationManager NavigationManager
+@attribute [Authorize]
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="customers/create">Create New</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Address</th>
+            <th>City</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th>Updated</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var customer in Customers)
+        {
+            <tr>
+                <td>@customer.Name</td>
+                <td>@customer.Email</td>
+                <td>@customer.Phone</td>
+                <td>@customer.Address</td>
+                <td>@customer.City</td>
+                <td>@customer.Status</td>
+                <td>@customer.Created</td>
+                <td>@customer.Updated</td>
+                <td>
+                    <a href="@($"customers/edit?id={customer.Id}")">Edit</a> |
+                    <a href="@($"customers/details?id={customer.Id}")">Details</a> |
+                    <a href="@($"customers/delete?id={customer.Id}")">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+ @code {
+    List<Customer> Customers { get; set; } = new List<Customer>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Set up filter
+        Expression<Func<Customer, bool>> filter = null;
+
+        Func<IQueryable<Customer>, IOrderedQueryable<Customer>> orderBy = q => q.OrderByDescending(i => i.Created).ThenByDescending(i => i.Updated.HasValue ? i.Updated : DateTime.MinValue);
+
+        // Set up includeProperties
+        string includeProperties = "";
+
+        // Set up pagination
+        int page = 1;
+        int pageSize = 30;
+
+        Customers = await unitOfWork.GetRepository<Customer>().GetAllAsync(
+            filter,
+            orderBy,
+            includeProperties,
+            page,
+            pageSize
+        );
+    }
+}

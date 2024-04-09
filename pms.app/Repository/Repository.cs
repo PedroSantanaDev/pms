@@ -35,20 +35,32 @@ namespace pms.app.Repository
             }
         }
 
-        public async Task<List<Entity>> GetAllAsync(Expression<Func<Entity, bool>> filter = null,
-                                                     Func<IQueryable<Entity>, IOrderedQueryable<Entity>> orderBy = null,
-                                                     string includeProperties = "",
-                                                     int page = 1,
-                                                     int pageSize = 25)
+        public async Task<List<Entity>> GetAllAsync(
+            Expression<Func<Entity, bool>> filter = null,
+            Func<IQueryable<Entity>, IOrderedQueryable<Entity>> orderBy = null,
+            string includeProperties = "",
+            int page = 1,
+            int pageSize = 25)
         {
             IQueryable<Entity> query = _dbContext.Set<Entity>();
 
-            // Include related entities
+            // Include related entities (including nested includes)
             if (!string.IsNullOrEmpty(includeProperties))
             {
-                foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                var includePropertiesArray = includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var includeProperty in includePropertiesArray)
                 {
-                    query = query.Include(includeProperty);
+                    if (includeProperty.Contains("."))
+                    {
+                        // This is a nested include
+                        query = query.Include(includeProperty);
+                    }
+                    else
+                    {
+                        // This is a direct include
+                        query = query.Include(includeProperty);
+                    }
                 }
             }
 

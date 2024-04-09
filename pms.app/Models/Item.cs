@@ -19,5 +19,7 @@ namespace pms.app.Models
 
         //Navigation property
         public Category? Category { get; set; }
+
+        public ICollection<CustomerItem> CustomerItems { get; set; } = new List<CustomerItem>();
     }
 }
