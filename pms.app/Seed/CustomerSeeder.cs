@@ -79,6 +79,7 @@ namespace pms.app.Seed
                 {
                     Name = customersList[i % customersList.Count], // Use modulo to cycle through the tech store names
                     Email = $"info@{customersList[i % customersList.Count].Replace(" ", "").ToLower()}.com", // Generate email the store name
+                    Phone = GenerateRandomPhoneNumber(), // Generate a random number
                     Address = address,
                     City = city,
                     Status = Status.Statuses.Active.ToString(),
@@ -88,6 +89,13 @@ namespace pms.app.Seed
             }
 
             await unitOfWork.GetRepository<Customer>().AddRangeAsync(customersToAdd);
+        }
+
+        private static string GenerateRandomPhoneNumber()
+        {
+            Random random = new Random();
+            // Format: (xxx) xxx-xxxx
+            return $"({random.Next(100, 999)}) {random.Next(100, 999)}-{random.Next(1000, 9999)}";
         }
     }
 }
