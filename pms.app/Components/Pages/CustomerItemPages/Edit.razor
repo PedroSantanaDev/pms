@@ -1,0 +1,101 @@
+﻿@page "/CustomerItems/edit"
+@inject pms.app.Data.ApplicationDbContext DB
+@using pms.app.Models
+@inject NavigationManager NavigationManager
+@using Microsoft.EntityFrameworkCore
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h4>CustomerItem</h4>
+<hr />
+@if (CustomerItem is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="CustomerItem" OnValidSubmit="UpdateCustomerItem" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <input type="hidden" name="CustomerItem.Id" value="@CustomerItem.Id" />
+                <div class="mb-3">
+                    <label for="customerid" class="form-label">CustomerId:</label>
+                    <InputNumber id="customerid" @bind-Value="CustomerItem.CustomerId" class="form-control" />
+                    <ValidationMessage For="() => CustomerItem.CustomerId" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="quantity" class="form-label">Quantity:</label>
+                    <InputNumber id="quantity" @bind-Value="CustomerItem.Quantity" class="form-control" />
+                    <ValidationMessage For="() => CustomerItem.Quantity" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="itemid" class="form-label">ItemId:</label>
+                    <InputNumber id="itemid" @bind-Value="CustomerItem.ItemId" class="form-control" />
+                    <ValidationMessage For="() => CustomerItem.ItemId" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="assigneddate" class="form-label">AssignedDate:</label>
+                    <InputDate id="assigneddate" @bind-Value="CustomerItem.AssignedDate" class="form-control" />
+                    <ValidationMessage For="() => CustomerItem.AssignedDate" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/customeritems">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    public int Id { get; set; }
+
+    [SupplyParameterFromForm]
+    public CustomerItem? CustomerItem { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        CustomerItem ??= await DB.CustomerItems.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (CustomerItem is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see https://aka.ms/RazorPagesCRUD.
+    public async Task UpdateCustomerItem()
+    {
+        DB.Attach(CustomerItem!).State = EntityState.Modified;
+
+        try
+        {
+            await DB.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!CustomerItemExists(CustomerItem!.Id))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/customeritems");
+    }
+
+    bool CustomerItemExists(int id)
+    {
+        return DB.CustomerItems.Any(e => e.Id == id);
+    }
+}

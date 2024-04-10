@@ -1,0 +1,82 @@
+﻿@page "/customeritems"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Authorization
+@using pms.app.Models
+@using System.Linq.Expressions;
+
+@inject UnitOfWork.IUnitOfWork unitOfWork
+@inject NavigationManager NavigationManager
+@attribute [Authorize]
+
+<PageTitle>Index</PageTitle>
+
+<h1>Customer Items</h1>
+
+<p>
+    <a href="customeritems/create">Create New</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Customer</th>
+            <th>Item Number (SKU)</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Category</th>           
+            <th>Created</th>
+            <th>Update</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var ci in CustomerItems)
+        {
+            <tr>
+                <td>@ci.Customer?.Name</td>
+                <td>@ci.Item.SKU</td>
+                <td>@ci.Item.Name</td>
+                <td>@ci.Item.Description</td>
+                <td>@ci.Item.Price</td>
+                <td>@ci.Item.Status</td>
+                <td>@ci.Item.Category?.Name</td>             
+                <td>@ci.Item.Created</td>
+                <td>@ci.Item.Updated</td>
+                <td>
+                    <a href="@($"customeritems/edit?id={ci.Id}")">Edit</a> |
+                    <a href="@($"customeritems/details?id={ci.Id}")">Details</a> |
+                    <a href="@($"customeritems/delete?id={ci.Id}")">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+    @code {
+    List<CustomerItem> CustomerItems { get; set; } = new List<CustomerItem>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Set up filter
+        //Expression<Func<CustomerItem, bool>> filter = null;
+
+        Func<IQueryable<CustomerItem>, IOrderedQueryable<CustomerItem>> orderBy = q => q.OrderByDescending(i => i.Customer.Name).ThenByDescending(i => i.AssignedDate);
+
+        // Set up includeProperties
+        string includeProperties = "Item,Item.Category,Customer";
+
+        // Set up pagination
+        int page = 1;
+        int pageSize = 30;
+
+        CustomerItems = await unitOfWork.GetRepository<CustomerItem>().GetAllAsync(
+            null,
+            orderBy,
+            includeProperties,
+            page,
+            pageSize
+        );
+
+    }
+}

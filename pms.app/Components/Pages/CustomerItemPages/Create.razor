@@ -1,0 +1,58 @@
+﻿@page "/customeritems/create"
+@inject pms.app.Data.ApplicationDbContext DB
+@using pms.app.Models
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h4>CustomerItem</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="CustomerItem" OnValidSubmit="AddCustomerItem" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" />
+            <div class="mb-3">
+                <label for="customerid" class="form-label">CustomerId:</label> 
+                <InputNumber id="customerid" @bind-Value="CustomerItem.CustomerId" class="form-control" /> 
+                <ValidationMessage For="() => CustomerItem.CustomerId" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="quantity" class="form-label">Quantity:</label> 
+                <InputNumber id="quantity" @bind-Value="CustomerItem.Quantity" class="form-control" /> 
+                <ValidationMessage For="() => CustomerItem.Quantity" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="itemid" class="form-label">ItemId:</label> 
+                <InputNumber id="itemid" @bind-Value="CustomerItem.ItemId" class="form-control" /> 
+                <ValidationMessage For="() => CustomerItem.ItemId" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="assigneddate" class="form-label">AssignedDate:</label> 
+                <InputDate id="assigneddate" @bind-Value="CustomerItem.AssignedDate" class="form-control" /> 
+                <ValidationMessage For="() => CustomerItem.AssignedDate" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/customeritems">Back to List</a>
+</div>
+
+@code {
+
+    [SupplyParameterFromForm]
+    public CustomerItem CustomerItem { get; set; } //= new();
+
+    // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
+    public async Task AddCustomerItem()
+    {
+        DB.CustomerItems.Add(CustomerItem);
+        await DB.SaveChangesAsync();
+        NavigationManager.NavigateTo("/customeritems");
+    }
+}
