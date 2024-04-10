@@ -1,15 +1,18 @@
 ﻿@page "/customeritems/details"
-@inject pms.app.Data.ApplicationDbContext DB
+@using Microsoft.EntityFrameworkCore;
+@using System.Linq.Expressions;
 @using pms.app.Models
+@using System.Globalization
+
+@inject UnitOfWork.IUnitOfWork unitOfWork
 @inject NavigationManager NavigationManager
-@using Microsoft.EntityFrameworkCore
 
 <PageTitle>Details</PageTitle>
 
 <h1>Details</h1>
 
 <div>
-    <h4>CustomerItem</h4>
+    <h4>Customer Item</h4>
     <hr />
     @if (customeritem is null)
     {
@@ -17,13 +20,37 @@
     }
     else {
         <dl class="row">
-            <dt class="col-sm-2">CustomerId</dt>
-            <dd class="col-sm-10">@customeritem.CustomerId</dd>
+            <dt class="col-sm-2">Customer Name</dt>
+            <dd class="col-sm-10">@customeritem.Customer.Name</dd>
+
+            <dt class="col-sm-2">Customer Address</dt>
+            <dd class="col-sm-10">@customeritem.Customer.Address</dd>
+
+            <dt class="col-sm-2">Customer City</dt>
+            <dd class="col-sm-10">@customeritem.Customer.City</dd>
+
+            <dt class="col-sm-2">Customer Email</dt>
+            <dd class="col-sm-10">@customeritem.Customer.Email</dd>
+
+            <dt class="col-sm-2">Customer Phone</dt>
+            <dd class="col-sm-10">@customeritem.Customer.Phone</dd>
+
             <dt class="col-sm-2">Quantity</dt>
             <dd class="col-sm-10">@customeritem.Quantity</dd>
-            <dt class="col-sm-2">ItemId</dt>
-            <dd class="col-sm-10">@customeritem.ItemId</dd>
-            <dt class="col-sm-2">AssignedDate</dt>
+
+            <dt class="col-sm-2">Item Number (SKU)</dt>
+            <dd class="col-sm-10">@customeritem.Item.SKU</dd>
+
+            <dt class="col-sm-2">Item Name</dt>
+            <dd class="col-sm-10">@customeritem.Item.Name</dd>
+
+            <dt class="col-sm-2">Item Descriton</dt>
+            <dd class="col-sm-10">@customeritem.Item.Description</dd>
+
+            <dt class="col-sm-2">Item Category</dt>
+            <dd class="col-sm-10">@customeritem.Item.Category?.Name</dd>
+
+            <dt class="col-sm-2">Assigned Date</dt>
             <dd class="col-sm-10">@customeritem.AssignedDate</dd>
         </dl>
         <div>
@@ -41,7 +68,25 @@
 
     protected override async Task OnInitializedAsync()
     {
-        customeritem = await DB.CustomerItems.FirstOrDefaultAsync(m => m.Id == Id);
+        // Set up filter
+        Expression<Func<CustomerItem, bool>> filter = i => i.Id == Id;
+
+        // Set up includeProperties
+        string includeProperties = "Item,Item.Category,Customer";
+
+        // Set up pagination
+        int page = 1;
+        int pageSize = 30;
+
+        var customerItems = await unitOfWork.GetRepository<CustomerItem>().GetAllAsync(
+            filter,
+            null,
+            includeProperties,
+            page,
+            pageSize
+        );
+
+        customeritem = customerItems.First();
 
         if (customeritem is null)
         {
