@@ -1,0 +1,90 @@
+﻿@page "/expensiveitemsreport"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Authorization
+@using pms.app.Models
+@using System.Linq.Expressions;
+@using System.Globalization
+
+@inject UnitOfWork.IUnitOfWork unitOfWork
+@inject NavigationManager NavigationManager
+@attribute [Authorize]
+
+@rendermode InteractiveServer
+
+<h1>Customers with X Most Expensive Items Report</h1>
+
+<div class="form-group row">
+    <label for="numberOfItems" class="col-sm-2 col-form-label">Number of Items:</label>
+    <div class="col-sm-2">
+        <input type="number" class="form-control" id="numberOfItems" @bind="numberOfItems" />
+    </div>
+    <div class="col-sm-2">
+        <button class="btn btn-primary" @onclick="GenerateReport">Generate Report</button>
+    </div>
+</div>
+
+@if (customerItemsWithExpensiveItems != null)
+{
+    <table class="table table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Customer Name</th>
+                <th>Expensive Items</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var customerItem in customerItemsWithExpensiveItems)
+            {
+                <tr>
+                    <td>@customerItem.Customer.Name</td>
+                    <td>
+                        <ul>
+                            @foreach (var item in customerItem.MostExpensiveItems)
+                            {
+                                <li>@item.Name - @item.Price.ToString("C")</li>
+                            }
+                        </ul>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private int numberOfItems;
+    private List<CustomerItemWithExpensiveItems> customerItemsWithExpensiveItems;
+
+    protected override async Task OnInitializedAsync()
+    {
+        numberOfItems = 5; // Default number of items
+        await GenerateReport();
+    }
+
+    private async Task GenerateReport()
+    {
+        var customersWithItems = await unitOfWork.GetRepository<CustomerItem>()
+            .GetAllAsync(includeProperties: "Customer,Item");
+
+        var groupedItemsByCustomer = customersWithItems.GroupBy(ci => ci.CustomerId);
+
+        customerItemsWithExpensiveItems = new List<CustomerItemWithExpensiveItems>();
+
+        foreach (var group in groupedItemsByCustomer)
+        {
+            var sortedItems = group.OrderByDescending(ci => ci.Item.Price).Take(numberOfItems);
+
+            customerItemsWithExpensiveItems.Add(new CustomerItemWithExpensiveItems
+                {
+                    Customer = group.First().Customer,
+                    MostExpensiveItems = sortedItems.Select(ci => ci.Item).ToList()
+                });
+        }
+    }
+
+    public class CustomerItemWithExpensiveItems
+    {
+        public Customer Customer { get; set; }
+        public List<Item> MostExpensiveItems { get; set; }
+    }
+}
