@@ -18,7 +18,8 @@
     {
         <p><em>Loading...</em></p>
     }
-    else {
+    else
+    {
         <dl class="row">
             <dt class="col-sm-2">Customer Name</dt>
             <dd class="col-sm-10">@customeritem.Customer.Name</dd>
@@ -76,7 +77,7 @@
 
         // Set up pagination
         int page = 1;
-        int pageSize = 30;
+        int pageSize = 500;
 
         var customerItems = await unitOfWork.GetRepository<CustomerItem>().GetAllAsync(
             filter,

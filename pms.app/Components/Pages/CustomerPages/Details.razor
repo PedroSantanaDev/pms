@@ -20,7 +20,8 @@
     {
         <p><em>Loading...</em></p>
     }
-    else {
+    else
+    {
         <dl class="row">
             <dt class="col-sm-2">Name</dt>
             <dd class="col-sm-10">@customer.Name</dd>
@@ -61,7 +62,7 @@
                             <td>@customerItem.Item.Name</td>
                             <td>@customerItem.Item.Price.ToString("C", CultureInfo.CurrentCulture)</td>
                             <td>@customerItem.Item.Status</td>
-                            <td>@customerItem.AssignedDate</td>                          
+                            <td>@customerItem.AssignedDate</td>
                         </tr>
                     }
                 }
@@ -73,7 +74,7 @@
                 }
             </tbody>
         </table>
-        
+
         <div>
             <a href="@($"/customers/edit?id={customer.Id}")">Edit</a> |
             <a href="@($"/customers")">Back to List</a>
@@ -100,7 +101,7 @@
 
         // Set up pagination
         int page = 1;
-        int pageSize = 30;
+        int pageSize = 500;
 
         var categories = await unitOfWork.GetRepository<Customer>().GetAllAsync(
             filter,

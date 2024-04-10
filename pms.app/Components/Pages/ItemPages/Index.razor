@@ -67,7 +67,7 @@
 
         // Set up pagination
         int page = 1;
-        int pageSize = 30;
+        int pageSize = 500;
 
         Items = await unitOfWork.GetRepository<Item>().GetAllAsync(
             filter,

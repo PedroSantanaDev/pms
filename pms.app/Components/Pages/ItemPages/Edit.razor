@@ -137,10 +137,10 @@ else
                     ErrorMessage = "Item Number (SKU) is already in use. Please choose a different Item Number (SKU).";
                     return; // Exit method without updating the item
                 }
-            }
 
-            Item!.Updated = DateTime.Now;
-            await unitOfWork.GetRepository<Item>().UpdateAsync(Item);
+                Item.Updated = DateTime.Now;
+                await unitOfWork.GetRepository<Item>().UpdateAsync(Item);
+            }
         }
         catch (DbUpdateConcurrencyException)
         {

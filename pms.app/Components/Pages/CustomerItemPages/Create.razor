@@ -1,7 +1,14 @@
 ﻿@page "/customeritems/create"
-@inject pms.app.Data.ApplicationDbContext DB
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Authorization
 @using pms.app.Models
+@using Microsoft.AspNetCore.Antiforgery
+@using pms.app.Enums;
+@using System.Linq.Expressions;
+
+@inject UnitOfWork.IUnitOfWork unitOfWork
 @inject NavigationManager NavigationManager
+@attribute [Authorize]
 
 <PageTitle>Create</PageTitle>
 
@@ -14,26 +21,36 @@
         <EditForm method="post" Model="CustomerItem" OnValidSubmit="AddCustomerItem" FormName="create" Enhance>
             <DataAnnotationsValidator />
             <ValidationSummary class="text-danger" />
+
             <div class="mb-3">
-                <label for="customerid" class="form-label">CustomerId:</label> 
-                <InputNumber id="customerid" @bind-Value="CustomerItem.CustomerId" class="form-control" /> 
-                <ValidationMessage For="() => CustomerItem.CustomerId" class="text-danger" /> 
-            </div>        
+                <label for="customer" class="form-label">Customer:</label>
+                <InputSelect id="customer" @bind-Value="CustomerItem.CustomerId" class="form-control">
+                    <option value="0"></option>
+                    @foreach (var customer in Customers)
+                    {
+                        <option value="@customer.Id">@customer.Name</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="@(() => CustomerItem.CustomerId)" class="text-danger" />
+            </div>
+
             <div class="mb-3">
-                <label for="quantity" class="form-label">Quantity:</label> 
-                <InputNumber id="quantity" @bind-Value="CustomerItem.Quantity" class="form-control" /> 
-                <ValidationMessage For="() => CustomerItem.Quantity" class="text-danger" /> 
-            </div>        
+                <label for="item" class="form-label">Item:</label>
+                <InputSelect id="item" @bind-Value="CustomerItem.ItemId" class="form-control">
+                    <option value="0"></option>
+                    @foreach (var item in Items)
+                    {
+                        <option value="@item.Id">@item.Name</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="@(() => CustomerItem.ItemId)" class="text-danger" />
+            </div>
+
             <div class="mb-3">
-                <label for="itemid" class="form-label">ItemId:</label> 
-                <InputNumber id="itemid" @bind-Value="CustomerItem.ItemId" class="form-control" /> 
-                <ValidationMessage For="() => CustomerItem.ItemId" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                <label for="assigneddate" class="form-label">AssignedDate:</label> 
-                <InputDate id="assigneddate" @bind-Value="CustomerItem.AssignedDate" class="form-control" /> 
-                <ValidationMessage For="() => CustomerItem.AssignedDate" class="text-danger" /> 
-            </div>        
+                <label for="quantity" class="form-label">Quantity:</label>
+                <InputNumber id="quantity" @bind-Value="CustomerItem.Quantity" class="form-control" />
+                <ValidationMessage For="() => CustomerItem.Quantity" class="text-danger" />
+            </div>
             <button type="submit" class="btn btn-primary">Create</button>
         </EditForm>
     </div>
@@ -46,13 +63,67 @@
 @code {
 
     [SupplyParameterFromForm]
-    public CustomerItem CustomerItem { get; set; } //= new();
+    public CustomerItem CustomerItem { get; set; } = new();
+
+    List<Item> Items { get; set; }
+    List<Customer> Customers { get; set; }
+
+    string ErrorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Set up filter
+        Expression<Func<Item, bool>> filter = i => i.Status == Status.Statuses.Active.ToString();
+
+        Func<IQueryable<Item>, IOrderedQueryable<Item>> orderBy = q => q.OrderBy(i => i.Name);
+
+        // Set up includeProperties
+        string includeProperties = "";
+
+        // Set up pagination
+        int page = 1;
+        int pageSize = 500;
+
+        Items ??= await unitOfWork.GetRepository<Item>().GetAllAsync(
+            filter,
+            orderBy,
+            includeProperties,
+            page,
+            pageSize
+           );
+
+        // Set up filter
+        Expression<Func<Customer, bool>> customerFilter = i => i.Status == Status.Statuses.Active.ToString();
+
+        Func<IQueryable<Customer>, IOrderedQueryable<Customer>> customerOrderBy = q => q.OrderBy(i => i.Name);
+
+        // Set up includeProperties
+        includeProperties = "";
+
+        Customers ??= await unitOfWork.GetRepository<Customer>().GetAllAsync(
+            customerFilter,
+            customerOrderBy,
+            includeProperties,
+            page,
+            pageSize
+            );
+    }
 
     // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
     public async Task AddCustomerItem()
     {
-        DB.CustomerItems.Add(CustomerItem);
-        await DB.SaveChangesAsync();
+        //Item.CustomerItems = null;
+        CustomerItem.AssignedDate = DateTime.Now;
+
+        var customerItemExits = await unitOfWork.GetRepository<CustomerItem>().GetAllAsync(i => i.CustomerId == CustomerItem.CustomerId && i.ItemId == CustomerItem.ItemId);
+
+        if (customerItemExits?.Count > 0)
+        {
+            ErrorMessage = "This item  is already assigned to this customer.";
+            return; // Exit method without updating the item
+        }
+        await unitOfWork.GetRepository<CustomerItem>().AddAsync(CustomerItem);
+
         NavigationManager.NavigateTo("/customeritems");
     }
 }

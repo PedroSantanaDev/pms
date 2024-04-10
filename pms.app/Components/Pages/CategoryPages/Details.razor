@@ -21,7 +21,8 @@
     {
         <p><em>Loading...</em></p>
     }
-    else {
+    else
+    {
         <dl class="row">
             <dt class="col-sm-2">Name</dt>
             <dd class="col-sm-10">@category.Name</dd>
@@ -32,26 +33,26 @@
             <dt class="col-sm-2">Updated</dt>
             <dd class="col-sm-10">@category.Updated</dd>
         </dl>
-  
-            <h5>Category Items</h5>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Number (SKU)</th>
-                        <th>Name</th>                       
-                        <th>Category</th>
-                        <th>Price</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
+
+        <h5>Category Items</h5>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Number (SKU)</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
                 @if (category.Items.Any())
                 {
                     @foreach (var item in category.Items)
                     {
                         <tr>
                             <td>@item.SKU</td>
-                            <td>@item.Name</td>                            
+                            <td>@item.Name</td>
                             <td>@category.Name</td>
                             <td>@item.Price.ToString("C", CultureInfo.CurrentCulture)</td>
                             <td>@item.Status</td>
@@ -64,9 +65,9 @@
                         <td colspan="2">No items assigned to this customer.</td>
                     </tr>
                 }
-                </tbody>
-            </table>
-        
+            </tbody>
+        </table>
+
         <div>
             <a href="@($"/categories/edit?id={category.Id}")">Edit</a> |
             <a href="@($"/categories")">Back to List</a>
@@ -82,9 +83,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-
         // Set up filter
-        Expression<Func<Category, bool>> filter =  i => i.Id == Id;
+        Expression<Func<Category, bool>> filter = i => i.Id == Id;
 
         Func<IQueryable<Category>, IOrderedQueryable<Category>> orderBy = q => q.OrderByDescending(i => i.Created).ThenByDescending(i => i.Updated.HasValue ? i.Updated : DateTime.MinValue);
 
@@ -93,7 +93,7 @@
 
         // Set up pagination
         int page = 1;
-        int pageSize = 30;
+        int pageSize = 500;
 
         var categories = await unitOfWork.GetRepository<Category>().GetAllAsync(
             filter,

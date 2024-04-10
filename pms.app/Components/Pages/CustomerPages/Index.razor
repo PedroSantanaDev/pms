@@ -50,7 +50,7 @@
     </tbody>
 </table>
 
- @code {
+@code {
     List<Customer> Customers { get; set; } = new List<Customer>();
 
     protected override async Task OnInitializedAsync()
@@ -65,7 +65,7 @@
 
         // Set up pagination
         int page = 1;
-        int pageSize = 30;
+        int pageSize = 500;
 
         Customers = await unitOfWork.GetRepository<Customer>().GetAllAsync(
             filter,

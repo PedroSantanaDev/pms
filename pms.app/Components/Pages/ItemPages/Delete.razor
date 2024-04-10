@@ -20,7 +20,8 @@
     {
         <p><em>Loading...</em></p>
     }
-    else {
+    else
+    {
         <dl class="row">
             <dt class="col-sm-2">SKU</dt>
             <dd class="col-sm-10">@item.SKU</dd>
@@ -42,7 +43,8 @@
             <dd class="col-sm-10">@item.Status</dd>
         </dl>
 
-        @if(item.Category != null){
+        @if (item.Category != null)
+        {
             <dl class="row">
                 <dt class="col-sm-2">Category Id</dt>
                 <dd class="col-sm-10">@item.CategoryId</dd>
@@ -86,7 +88,7 @@
 
         // Set up pagination
         int page = 1;
-        int pageSize = 30;
+        int pageSize = 500;
 
         var items = await unitOfWork.GetRepository<Item>().GetAllAsync(
             filter,
@@ -125,7 +127,7 @@
             }
 
             // Delete the item
-            await unitOfWork.GetRepository<Item>().DeleteAsync(item.Id);          
+            await unitOfWork.GetRepository<Item>().DeleteAsync(item.Id);
         }
         NavigationManager.NavigateTo("/items");
     }

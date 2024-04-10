@@ -1,12 +1,13 @@
 ﻿@page "/items/details"
-
 @using Microsoft.EntityFrameworkCore;
 @using System.Linq.Expressions;
 @using pms.app.Models
 @using System.Globalization
+@using Microsoft.AspNetCore.Authorization
 
 @inject UnitOfWork.IUnitOfWork unitOfWork
 @inject NavigationManager NavigationManager
+@attribute [Authorize]
 
 <PageTitle>Details</PageTitle>
 
@@ -45,18 +46,18 @@
         </dl>
 
 
-            <h5>Item Customers</h5>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Customer Name</th>
-                        <th>Address</th>
-                        <th>City</th>
-                        <th>Email</th>
-                        <th>Date Assinged</th>
-                    </tr>
-                </thead>
-                <tbody>
+        <h5>Item Customers</h5>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Customer Name</th>
+                    <th>Address</th>
+                    <th>City</th>
+                    <th>Email</th>
+                    <th>Date Assinged</th>
+                </tr>
+            </thead>
+            <tbody>
                 @if (CustomerItems.Any())
                 {
                     @foreach (var customerItem in CustomerItems)
@@ -77,8 +78,8 @@
                     </tr>
                 }
             </tbody>
-            </table>
-        
+        </table>
+
         <div>
             <a href="@($"/items/edit?id={item.Id}")">Edit</a> |
             <a href="@($"/items")">Back to List</a>
@@ -104,7 +105,7 @@
 
         // Set up pagination
         int page = 1;
-        int pageSize = 30;
+        int pageSize = 500;
 
         var items = await unitOfWork.GetRepository<Item>().GetAllAsync(
             filter,
@@ -125,10 +126,10 @@
 
         string customerItemincludeProperties = "Customer";
         CustomerItems ??= await unitOfWork.GetRepository<CustomerItem>().GetAllAsync(
-            customerItemFilter, 
-            null, 
-            customerItemincludeProperties, 
-            page, 
+            customerItemFilter,
+            null,
+            customerItemincludeProperties,
+            page,
             pageSize);
     }
 }
