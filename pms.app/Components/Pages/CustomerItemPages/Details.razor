@@ -9,58 +9,72 @@
 
 <PageTitle>Details</PageTitle>
 
-<h1>Details</h1>
 
-<div>
-    <h4>Customer Item</h4>
-    <hr />
-    @if (customeritem is null)
-    {
-        <p><em>Loading...</em></p>
-    }
-    else
-    {
-        <dl class="row">
-            <dt class="col-sm-2">Customer Name</dt>
-            <dd class="col-sm-10">@customeritem.Customer.Name</dd>
+<div class="card">
 
-            <dt class="col-sm-2">Customer Address</dt>
-            <dd class="col-sm-10">@customeritem.Customer.Address</dd>
+    <div class="card-header text-white bg-primary">
+        <h4>Customer Item Details</h4>
+    </div>
 
-            <dt class="col-sm-2">Customer City</dt>
-            <dd class="col-sm-10">@customeritem.Customer.City</dd>
 
-            <dt class="col-sm-2">Customer Email</dt>
-            <dd class="col-sm-10">@customeritem.Customer.Email</dd>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
 
-            <dt class="col-sm-2">Customer Phone</dt>
-            <dd class="col-sm-10">@customeritem.Customer.Phone</dd>
 
-            <dt class="col-sm-2">Quantity</dt>
-            <dd class="col-sm-10">@customeritem.Quantity</dd>
+                <div>
+                    <h4>Customer Item</h4>
+                    <hr />
+                    @if (customeritem is null)
+                    {
+                        <p><em>Loading...</em></p>
+                    }
+                    else
+                    {
+                        <dl class="row">
+                            <dt class="col-sm-2">Customer Name</dt>
+                            <dd class="col-sm-10">@customeritem.Customer.Name</dd>
 
-            <dt class="col-sm-2">Item Number (SKU)</dt>
-            <dd class="col-sm-10">@customeritem.Item.SKU</dd>
+                            <dt class="col-sm-2">Customer Address</dt>
+                            <dd class="col-sm-10">@customeritem.Customer.Address</dd>
 
-            <dt class="col-sm-2">Item Name</dt>
-            <dd class="col-sm-10">@customeritem.Item.Name</dd>
+                            <dt class="col-sm-2">Customer City</dt>
+                            <dd class="col-sm-10">@customeritem.Customer.City</dd>
 
-            <dt class="col-sm-2">Item Descriton</dt>
-            <dd class="col-sm-10">@customeritem.Item.Description</dd>
+                            <dt class="col-sm-2">Customer Email</dt>
+                            <dd class="col-sm-10">@customeritem.Customer.Email</dd>
 
-            <dt class="col-sm-2">Item Category</dt>
-            <dd class="col-sm-10">@customeritem.Item.Category?.Name</dd>
+                            <dt class="col-sm-2">Customer Phone</dt>
+                            <dd class="col-sm-10">@customeritem.Customer.Phone</dd>
 
-            <dt class="col-sm-2">Assigned Date</dt>
-            <dd class="col-sm-10">@customeritem.AssignedDate</dd>
-        </dl>
-        <div>
-            <a href="@($"/customeritems/edit?id={customeritem.Id}")">Edit</a> |
-            <a href="@($"/customeritems")">Back to List</a>
+                            <dt class="col-sm-2">Quantity</dt>
+                            <dd class="col-sm-10">@customeritem.Quantity</dd>
+
+                            <dt class="col-sm-2">Item Number (SKU)</dt>
+                            <dd class="col-sm-10">@customeritem.Item.SKU</dd>
+
+                            <dt class="col-sm-2">Item Name</dt>
+                            <dd class="col-sm-10">@customeritem.Item.Name</dd>
+
+                            <dt class="col-sm-2">Item Descriton</dt>
+                            <dd class="col-sm-10">@customeritem.Item.Description</dd>
+
+                            <dt class="col-sm-2">Item Category</dt>
+                            <dd class="col-sm-10">@customeritem.Item.Category?.Name</dd>
+
+                            <dt class="col-sm-2">Assigned Date</dt>
+                            <dd class="col-sm-10">@customeritem.AssignedDate</dd>
+                        </dl>
+                        <div>
+                            <a href="@($"/customeritems/edit?id={customeritem.Id}" )" class="btn btn-sm btn-primary">Edit</a>
+                            <a href="@($"/customeritems")" class="btn btn-sm btn-secondary">Back to List</a>
+                        </div>
+                    }
+                </div>
+            </div>
         </div>
-    }
+    </div>
 </div>
-
 @code {
     CustomerItem? customeritem;
 
@@ -80,11 +94,11 @@
         int pageSize = 500;
 
         var customerItems = await unitOfWork.GetRepository<CustomerItem>().GetAllAsync(
-            filter,
-            null,
-            includeProperties,
-            page,
-            pageSize
+        filter,
+        null,
+        includeProperties,
+        page,
+        pageSize
         );
 
         customeritem = customerItems.First();

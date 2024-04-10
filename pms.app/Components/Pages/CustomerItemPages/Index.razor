@@ -10,48 +10,60 @@
 
 <PageTitle>Index</PageTitle>
 
-<h1>Customer Items</h1>
+<div class="card">
 
-<p>
-    <a href="customeritems/create">Create New</a>
-</p>
+    <div class="card-header text-white bg-primary">
+        <h4>Customer Items</h4>
+    </div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Customer</th>
-            <th>Item Number (SKU)</th>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Price</th>
-            <th>Status</th>
-            <th>Category</th>
-            <th>Created</th>
-            <th>Update</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var ci in CustomerItems)
-        {
-            <tr>
-                <td>@ci.Customer?.Name</td>
-                <td>@ci.Item.SKU</td>
-                <td>@ci.Item.Name</td>
-                <td>@ci.Item.Description</td>
-                <td>@ci.Item.Price</td>
-                <td>@ci.Item.Status</td>
-                <td>@ci.Item.Category?.Name</td>
-                <td>@ci.Item.Created</td>
-                <td>@ci.Item.Updated</td>
-                <td>
-                    <a href="@($"customeritems/edit?id={ci.Id}")">Edit</a> |
-                    <a href="@($"customeritems/details?id={ci.Id}")">Details</a> |
-                    <a href="@($"customeritems/delete?id={ci.Id}")">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+
+                <p>
+                    <a href="customeritems/create" class="btn btn-primary">Add New</a>
+                </p>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Item Number (SKU)</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Category</th>
+                            <th>Created</th>
+                            <th>Update</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var ci in CustomerItems)
+                        {
+                            <tr>
+                                <td>@ci.Customer?.Name</td>
+                                <td>@ci.Item.SKU</td>
+                                <td>@ci.Item.Name</td>
+                                <td>@ci.Item.Description</td>
+                                <td>@ci.Item.Price</td>
+                                <td>@ci.Item.Status</td>
+                                <td>@ci.Item.Category?.Name</td>
+                                <td>@ci.Item.Created</td>
+                                <td>@ci.Item.Updated</td>
+                                <td>
+                                    <a href="@($"customeritems/edit?id={ci.Id}")" class="btn btn-sm btn-warning">Edit</a>
+                                    <a href="@($"customeritems/details?id={ci.Id}")" class="btn btn-sm btn-info">Details</a>
+                                    <a href="@($"customeritems/delete?id={ci.Id}")" class="btn btn-sm btn-danger">Delete</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
 @code {
     List<CustomerItem> CustomerItems { get; set; } = new List<CustomerItem>();
