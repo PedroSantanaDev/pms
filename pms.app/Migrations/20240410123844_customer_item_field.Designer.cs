@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using pms.app.Data;
 
@@ -10,9 +11,11 @@ using pms.app.Data;
 namespace pms.app.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240410123844_customer_item_field")]
+    partial class customer_item_field
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.3");
@@ -230,7 +233,7 @@ namespace pms.app.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("pms.app.Models.Customer", b =>
@@ -269,7 +272,7 @@ namespace pms.app.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Customers", (string)null);
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("pms.app.Models.CustomerItem", b =>
@@ -299,7 +302,7 @@ namespace pms.app.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("CustomerItems", (string)null);
+                    b.ToTable("CustomerItems");
                 });
 
             modelBuilder.Entity("pms.app.Models.Item", b =>
@@ -338,7 +341,7 @@ namespace pms.app.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Items", (string)null);
+                    b.ToTable("Items");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

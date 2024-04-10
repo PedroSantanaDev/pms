@@ -120,7 +120,7 @@ else
     public async Task UpdateItem()
     {
         try
-        {       
+        {
             if (Item != null)
             {
                 // Uncategorized was selected by the user
@@ -128,14 +128,15 @@ else
                 {
                     Item.CategoryId = null;
                 }
-                
-                //Check if another product has thta SKU
-                var itemWithSameSKU = await unitOfWork.GetRepository<Item>().GetAllAsync(i => i.SKU == Item.SKU && i.Id!= Item.Id);
 
-                if (itemWithSameSKU != null && itemWithSameSKU.Count > 0){
+                //Check if another product has thta SKU
+                var itemWithSameSKU = await unitOfWork.GetRepository<Item>().GetAllAsync(i => i.SKU == Item.SKU && i.Id != Item.Id);
+
+                if (itemWithSameSKU != null && itemWithSameSKU.Count > 0)
+                {
                     ErrorMessage = "Item Number (SKU) is already in use. Please choose a different Item Number (SKU).";
                     return; // Exit method without updating the item
-                }                
+                }
             }
 
             Item!.Updated = DateTime.Now;

@@ -5,21 +5,21 @@ namespace pms.app.Models
     {
         public int Id { get; set; }
         [Required(ErrorMessage = "Item SKU is required.")]
+        [Range(1, int.MaxValue, ErrorMessage = "Quantity must be a positive number.")]
         public int SKU { get; set; }
         [Required(ErrorMessage = "Item Name is required.")]
         public string Name { get; set; }
         public string? Description { get; set; }
         [Required(ErrorMessage = "Item Price is required.")]
+        [Range(0, double.MaxValue, ErrorMessage = "Item Price must be a positive number.")]
         public decimal Price { get; set; }
+        [Required(ErrorMessage = "Item Status is required.")]
         public string Status { get; set; }
         public DateTime Created { get; set; } = DateTime.Now;
         public DateTime? Updated { get; set; }
-        // Foreign key property
         public int? CategoryId { get; set; }
 
-        //Navigation property
         public Category? Category { get; set; }
 
-        //public ICollection<CustomerItem>? CustomerItems { get; set; } = new List<CustomerItem>();
     }
 }
