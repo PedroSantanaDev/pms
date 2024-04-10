@@ -44,8 +44,7 @@
             <dd class="col-sm-10">@item.Updated</dd>
         </dl>
 
-       <!-- @if (item.CustomerItems.Any())
-        {
+
             <h5>Item Customers</h5>
             <table class="table">
                 <thead>
@@ -58,7 +57,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var customerItem in item.CustomerItems)
+                @if (CustomerItems.Any())
+                {
+                    @foreach (var customerItem in CustomerItems)
                     {
                         <tr>
                             <td>@customerItem.Customer.Name</td>
@@ -68,11 +69,16 @@
                             <td>@customerItem.AssignedDate</td>
                         </tr>
                     }
-                </tbody>
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="2">Item not assigned to any customer.</td>
+                    </tr>
+                }
+            </tbody>
             </table>
-        } -->
-
-
+        
         <div>
             <a href="@($"/items/edit?id={item.Id}")">Edit</a> |
             <a href="@($"/items")">Back to List</a>
@@ -86,12 +92,12 @@
     [SupplyParameterFromQuery]
     public int Id { get; set; }
 
+    public List<CustomerItem> CustomerItems;
+
     protected override async Task OnInitializedAsync()
     {
         // Set up filter
         Expression<Func<Item, bool>> filter = i => i.Id == Id;
-
-        Func<IQueryable<Item>, IOrderedQueryable<Item>> orderBy = null;
 
         // Set up includeProperties
         string includeProperties = "Category";
@@ -102,13 +108,11 @@
 
         var items = await unitOfWork.GetRepository<Item>().GetAllAsync(
             filter,
-            orderBy,
+            null,
             includeProperties,
             page,
             pageSize
         );
-
-
 
         item = items.First();
 
@@ -116,5 +120,15 @@
         {
             NavigationManager.NavigateTo("notfound");
         }
+
+        Expression<Func<CustomerItem, bool>> customerItemFilter = i => i.ItemId == Id;
+
+        string customerItemincludeProperties = "Customer";
+        CustomerItems ??= await unitOfWork.GetRepository<CustomerItem>().GetAllAsync(
+            customerItemFilter, 
+            null, 
+            customerItemincludeProperties, 
+            page, 
+            pageSize);
     }
 }

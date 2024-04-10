@@ -6,6 +6,8 @@ namespace pms.app.Models
         public int Id { get; set; }
         [Required(ErrorMessage = "Customer Name is required.")]
         public string Name { get; set; }
+        [Required(ErrorMessage = "Customer Email is required.")]
+        [EmailAddress(ErrorMessage = "Invalid email address format. Please provide a valid email address.")]
         public string? Email { get; set; }
         [Required(ErrorMessage = "Customer Phone is required.")]
         [RegularExpression(@"^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$", ErrorMessage = "Invalid phone number format. Please provide a valid phone number.")]

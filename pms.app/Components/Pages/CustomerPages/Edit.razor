@@ -1,8 +1,14 @@
 ﻿@page "/Customers/edit"
-@inject pms.app.Data.ApplicationDbContext DB
-@using pms.app.Models
-@inject NavigationManager NavigationManager
 @using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Authorization
+@using pms.app.Models
+@using Microsoft.AspNetCore.Antiforgery
+@using System.Linq.Expressions;
+@using pms.app.Enums;
+
+@inject UnitOfWork.IUnitOfWork unitOfWork
+@inject NavigationManager NavigationManager
+@attribute [Authorize]
 
 <PageTitle>Edit</PageTitle>
 
@@ -20,7 +26,7 @@ else
         <div class="col-md-4">
             <EditForm method="post" Model="Customer" OnValidSubmit="UpdateCustomer" FormName="edit" Enhance>
                 <DataAnnotationsValidator />
-                <ValidationSummary />
+                <ValidationSummary class="text-danger" />
                 <input type="hidden" name="Customer.Id" value="@Customer.Id" />
                 <div class="mb-3">
                     <label for="name" class="form-label">Name:</label>
@@ -49,18 +55,19 @@ else
                 </div>
                 <div class="mb-3">
                     <label for="status" class="form-label">Status:</label>
-                    <InputText id="status" @bind-Value="Customer.Status" class="form-control" />
+                    <InputSelect id="status" @bind-Value="Customer.Status" class="form-control">
+                        @foreach (var statusOption in Status.GetStatusOptions())
+                        {
+                            <option value="@statusOption">@statusOption</option>
+                        }
+                    </InputSelect>
                     <ValidationMessage For="() => Customer.Status" class="text-danger" />
                 </div>
+
                 <div class="mb-3">
                     <label for="created" class="form-label">Created:</label>
-                    <InputDate id="created" @bind-Value="Customer.Created" class="form-control" />
+                    <InputDate id="created" @bind-Value="Customer.Created" class="form-control" readonly />
                     <ValidationMessage For="() => Customer.Created" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="updated" class="form-label">Updated:</label>
-                    <InputDate id="updated" @bind-Value="Customer.Updated" class="form-control" />
-                    <ValidationMessage For="() => Customer.Updated" class="text-danger" />
                 </div>
                 <button type="submit" class="btn btn-primary">Save</button>
             </EditForm>
@@ -81,7 +88,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        Customer ??= await DB.Customers.FirstOrDefaultAsync(m => m.Id == Id);
+        Customer ??= await unitOfWork.GetRepository<Customer>().GetByIdAsync(Id);
 
         if (Customer is null)
         {
@@ -93,15 +100,21 @@ else
     // For more details, see https://aka.ms/RazorPagesCRUD.
     public async Task UpdateCustomer()
     {
-        DB.Attach(Customer!).State = EntityState.Modified;
+        //DB.Attach(Customer!).State = EntityState.Modified;
 
         try
         {
-            await DB.SaveChangesAsync();
+            if (Customer != null)
+            {
+                Customer.Updated = DateTime.Now;
+                await unitOfWork.GetRepository<Customer>().UpdateAsync(Customer);
+            }
         }
         catch (DbUpdateConcurrencyException)
         {
-            if (!CustomerExists(Customer!.Id))
+            var customerExits = await CustomerExists(Customer!.Id);
+
+            if (!customerExits)
             {
                 NavigationManager.NavigateTo("notfound");
             }
@@ -114,8 +127,14 @@ else
         NavigationManager.NavigateTo("/customers");
     }
 
-    bool CustomerExists(int id)
+    private async Task<bool> CustomerExists(int id)
     {
-        return DB.Customers.Any(e => e.Id == id);
+        var customer = await unitOfWork.GetRepository<Customer>().GetByIdAsync(id);
+
+        if (customer == null)
+        {
+            return false;
+        }
+        return true;
     }
 }

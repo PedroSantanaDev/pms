@@ -4,9 +4,11 @@
 @using System.Linq.Expressions;
 @using pms.app.Models
 @using System.Globalization
+@using Microsoft.AspNetCore.Authorization
 
 @inject UnitOfWork.IUnitOfWork unitOfWork
 @inject NavigationManager NavigationManager
+@attribute [Authorize]
 
 <PageTitle>Details</PageTitle>
 
@@ -30,9 +32,7 @@
             <dt class="col-sm-2">Updated</dt>
             <dd class="col-sm-10">@category.Updated</dd>
         </dl>
-
-        @if (category.Items.Any())
-        {
+  
             <h5>Category Items</h5>
             <table class="table">
                 <thead>
@@ -45,7 +45,8 @@
                     </tr>
                 </thead>
                 <tbody>
-
+                @if (category.Items.Any())
+                {
                     @foreach (var item in category.Items)
                     {
                         <tr>
@@ -56,17 +57,16 @@
                             <td>@item.Status</td>
                         </tr>
                     }
-
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="2">No items assigned to this customer.</td>
+                    </tr>
+                }
                 </tbody>
             </table>
-        }
-        else
-        {
-            <tr>
-                <td colspan="2">No items assigned to this customer.</td>
-            </tr>
-        }
-
+        
         <div>
             <a href="@($"/categories/edit?id={category.Id}")">Edit</a> |
             <a href="@($"/categories")">Back to List</a>

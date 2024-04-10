@@ -26,6 +26,7 @@ else
         <div class="col-md-4">
             <EditForm method="post" Model="Category" OnValidSubmit="UpdateCategory" FormName="edit" Enhance>
                 <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger" />
                 <input type="hidden" name="Category.Id" value="@Category.Id" />
                 <div class="mb-3">
                     <label for="name" class="form-label">Name:</label>
@@ -85,7 +86,7 @@ else
         catch (DbUpdateConcurrencyException)
         {
             var categoryExits = await CategoryExists(Category!.Id);
-            if (categoryExits)
+            if (!categoryExits)
             {
                 NavigationManager.NavigateTo("notfound");
             }

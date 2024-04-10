@@ -144,7 +144,7 @@ else
         catch (DbUpdateConcurrencyException)
         {
             var itemExits = await ItemExists(Item!.Id);
-            if (itemExits)
+            if (!itemExits)
             {
                 NavigationManager.NavigateTo("notfound");
             }
