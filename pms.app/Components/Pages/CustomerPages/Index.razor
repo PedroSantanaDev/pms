@@ -9,46 +9,59 @@
 @attribute [Authorize]
 <PageTitle>Index</PageTitle>
 
-<h1>Index</h1>
+<div class="card">
 
-<p>
-    <a href="customers/create">Create New</a>
-</p>
+    <div class="card-header text-white bg-primary">
+        <h4>Customers</h4>
+    </div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Address</th>
-            <th>City</th>
-            <th>Status</th>
-            <th>Created</th>
-            <th>Updated</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var customer in Customers)
-        {
-            <tr>
-                <td>@customer.Name</td>
-                <td>@customer.Email</td>
-                <td>@customer.Phone</td>
-                <td>@customer.Address</td>
-                <td>@customer.City</td>
-                <td>@customer.Status</td>
-                <td>@customer.Created</td>
-                <td>@customer.Updated</td>
-                <td>
-                    <a href="@($"customers/edit?id={customer.Id}")">Edit</a> |
-                    <a href="@($"customers/details?id={customer.Id}")">Details</a> |
-                    <a href="@($"customers/delete?id={customer.Id}")">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+
+                <p>
+                    <a href="customers/create" class="btn btn-primary">Add New</a>
+                </p>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Address</th>
+                            <th>City</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Updated</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var customer in Customers)
+                        {
+                            <tr>
+                                <td>@customer.Name</td>
+                                <td>@customer.Email</td>
+                                <td>@customer.Phone</td>
+                                <td>@customer.Address</td>
+                                <td>@customer.City</td>
+                                <td>@customer.Status</td>
+                                <td>@customer.Created</td>
+                                <td>@customer.Updated</td>
+                                <td>
+                                    <a href="@($"customers/edit?id={customer.Id}")" class="btn btn-sm btn-warning">Edit</a>
+                                    <a href="@($"customers/details?id={customer.Id}")" class="btn btn-sm btn-info">Details</a>
+                                    <a href="@($"customers/delete?id={customer.Id}")" class="btn btn-sm btn-danger">Delete</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
 
 @code {
     List<Customer> Customers { get; set; } = new List<Customer>();

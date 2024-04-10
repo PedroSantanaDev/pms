@@ -11,75 +11,89 @@
 
 <PageTitle>Details</PageTitle>
 
-<h1>Details</h1>
 
-<div>
-    <h4>Customer</h4>
-    <hr />
-    @if (customer is null)
-    {
-        <p><em>Loading...</em></p>
-    }
-    else
-    {
-        <dl class="row">
-            <dt class="col-sm-2">Name</dt>
-            <dd class="col-sm-10">@customer.Name</dd>
-            <dt class="col-sm-2">Email</dt>
-            <dd class="col-sm-10">@customer.Email</dd>
-            <dt class="col-sm-2">Phone</dt>
-            <dd class="col-sm-10">@customer.Phone</dd>
-            <dt class="col-sm-2">Address</dt>
-            <dd class="col-sm-10">@customer.Address</dd>
-            <dt class="col-sm-2">City</dt>
-            <dd class="col-sm-10">@customer.City</dd>
-            <dt class="col-sm-2">Status</dt>
-            <dd class="col-sm-10">@customer.Status</dd>
-            <dt class="col-sm-2">Created</dt>
-            <dd class="col-sm-10">@customer.Created</dd>
-            <dt class="col-sm-2">Updated</dt>
-            <dd class="col-sm-10">@customer.Updated</dd>
-        </dl>
+<div class="card">
 
-        <h5>Customer Items</h5>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Number (SKU)</th>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Status</th>
-                    <th>Date Assinged</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (customer.CustomerItems.Any())
+    <div class="card-header text-white bg-primary">
+        <h4>Customer Details</h4>
+    </div>
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                @if (customer is null)
                 {
-                    @foreach (var customerItem in customer.CustomerItems)
-                    {
-                        <tr>
-                            <td>@customerItem.Item.SKU</td>
-                            <td>@customerItem.Item.Name</td>
-                            <td>@customerItem.Item.Price.ToString("C", CultureInfo.CurrentCulture)</td>
-                            <td>@customerItem.Item.Status</td>
-                            <td>@customerItem.AssignedDate</td>
-                        </tr>
-                    }
+                    <p><em>Loading...</em></p>
                 }
                 else
                 {
-                    <tr>
-                        <td colspan="2">No items assigned to this customer.</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                    <dl class="row">
+                        <dt class="col-sm-2">Name</dt>
+                        <dd class="col-sm-10">@customer.Name</dd>
+                        <dt class="col-sm-2">Email</dt>
+                        <dd class="col-sm-10">@customer.Email</dd>
+                        <dt class="col-sm-2">Phone</dt>
+                        <dd class="col-sm-10">@customer.Phone</dd>
+                        <dt class="col-sm-2">Address</dt>
+                        <dd class="col-sm-10">@customer.Address</dd>
+                        <dt class="col-sm-2">City</dt>
+                        <dd class="col-sm-10">@customer.City</dd>
+                        <dt class="col-sm-2">Status</dt>
+                        <dd class="col-sm-10">@customer.Status</dd>
+                        <dt class="col-sm-2">Created</dt>
+                        <dd class="col-sm-10">@customer.Created</dd>
+                        <dt class="col-sm-2">Updated</dt>
+                        <dd class="col-sm-10">@customer.Updated</dd>
+                    </dl>
 
-        <div>
-            <a href="@($"/customers/edit?id={customer.Id}")">Edit</a> |
-            <a href="@($"/customers")">Back to List</a>
+                    <div>
+                        <a href="@($"/customers/edit?id={customer.Id}")" class="btn btn-sm btn-warning text-white">Edit</a>
+                        <a href="@($"/customers")" class="btn btn-sm btn-secondary">Back to List</a>
+                    </div>
+
+                    <h5>Customer Items</h5>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Number (SKU)</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Date Assinged</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (customer.CustomerItems.Any())
+                            {
+                                @foreach (var customerItem in customer.CustomerItems)
+                                {
+                                    <tr>
+                                        <td>@customerItem.Item.SKU</td>
+                                        <td>@customerItem.Item.Name</td>
+                                        <td>@customerItem.Item.Price.ToString("C", CultureInfo.CurrentCulture)</td>
+                                        <td>@customerItem.Item.Status</td>
+                                        <td>@customerItem.AssignedDate</td>
+                                        <td>
+                                            <a href="@($"/items/details?id={customerItem.Item.Id}")" class="btn btn-sm btn-info text-white">View</a>
+                                            <a href="@($"/items/edit?id={customerItem.Item.Id}")" class="btn btn-sm btn-primary">Edit</a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="2">No items assigned to this customer.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+
+            </div>
         </div>
-    }
+
+    </div>
 </div>
 
 @code {
@@ -104,12 +118,12 @@
         int pageSize = 500;
 
         var categories = await unitOfWork.GetRepository<Customer>().GetAllAsync(
-            filter,
-            orderBy,
-            includeProperties,
-            page,
-            pageSize
-            );
+        filter,
+        orderBy,
+        includeProperties,
+        page,
+        pageSize
+        );
 
         customer = categories.FirstOrDefault();
 

@@ -41,8 +41,8 @@
                     </dl>
 
                     <div>
-                        <a href="@($"/categories/edit?id={category.Id}")" class="btn btn-danger text-white">Edit</a>
-                        <a href="@($"/categories")" class="btn btn-secondary">Back to List</a>
+                        <a href="@($"/categories/edit?id={category.Id}")" class="btn btn-sm btn-warning text-white">Edit</a>
+                        <a href="@($"/categories")" class="btn btn-sm btn-secondary">Back to List</a>
                     </div>
 
                     <hr />
@@ -70,8 +70,8 @@
                                         <td>@item.Price.ToString("C", CultureInfo.CurrentCulture)</td>
                                         <td>@item.Status</td>
                                         <td>
-                                            <a href="@($"/items/details?id={item.Id}")" class="btn btn-info text-white">View</a>
-                                            <a href="@($"/items/edit?id={item.Id}")" class="btn btn-primary">Edit</a>
+                                            <a href="@($"/items/details?id={item.Id}")" class="btn btn-sm btn-info text-white">View</a>
+                                            <a href="@($"/items/edit?id={item.Id}")" class="btn btn-sm btn-primary">Edit</a>
                                         </td>
                                     </tr>
                                 }

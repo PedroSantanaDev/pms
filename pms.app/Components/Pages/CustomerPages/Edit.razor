@@ -12,72 +12,81 @@
 
 <PageTitle>Edit</PageTitle>
 
-<h1>Edit</h1>
+<div class="card">
 
-<h4>Customer</h4>
-<hr />
-@if (Customer is null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <div class="row">
-        <div class="col-md-4">
-            <EditForm method="post" Model="Customer" OnValidSubmit="UpdateCustomer" FormName="edit" Enhance>
-                <DataAnnotationsValidator />
-                <ValidationSummary class="text-danger" />
-                <input type="hidden" name="Customer.Id" value="@Customer.Id" />
-                <div class="mb-3">
-                    <label for="name" class="form-label">Name:</label>
-                    <InputText id="name" @bind-Value="Customer.Name" class="form-control" />
-                    <ValidationMessage For="() => Customer.Name" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email:</label>
-                    <InputText id="email" @bind-Value="Customer.Email" class="form-control" />
-                    <ValidationMessage For="() => Customer.Email" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="phone" class="form-label">Phone:</label>
-                    <InputText id="phone" @bind-Value="Customer.Phone" class="form-control" />
-                    <ValidationMessage For="() => Customer.Phone" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="address" class="form-label">Address:</label>
-                    <InputText id="address" @bind-Value="Customer.Address" class="form-control" />
-                    <ValidationMessage For="() => Customer.Address" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="city" class="form-label">City:</label>
-                    <InputText id="city" @bind-Value="Customer.City" class="form-control" />
-                    <ValidationMessage For="() => Customer.City" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="status" class="form-label">Status:</label>
-                    <InputSelect id="status" @bind-Value="Customer.Status" class="form-control">
-                        @foreach (var statusOption in Status.GetStatusOptions())
-                        {
-                            <option value="@statusOption">@statusOption</option>
-                        }
-                    </InputSelect>
-                    <ValidationMessage For="() => Customer.Status" class="text-danger" />
-                </div>
+    <div class="card-header text-white bg-primary">
+        <h4>Edit Customer</h4>
+    </div>
 
-                <div class="mb-3">
-                    <label for="created" class="form-label">Created:</label>
-                    <InputDate id="created" @bind-Value="Customer.Created" class="form-control" readonly />
-                    <ValidationMessage For="() => Customer.Created" class="text-danger" />
-                </div>
-                <button type="submit" class="btn btn-primary">Save</button>
-            </EditForm>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+
+                @if (Customer is null)
+                {
+                    <p><em>Loading...</em></p>
+                }
+                else
+                {
+                    <div class="row">
+                        <div class="col-md-4">
+                            <EditForm method="post" Model="Customer" OnValidSubmit="UpdateCustomer" FormName="edit" Enhance>
+                                <DataAnnotationsValidator />
+                                <ValidationSummary class="text-danger" />
+                                <input type="hidden" name="Customer.Id" value="@Customer.Id" />
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Name:</label>
+                                    <InputText id="name" @bind-Value="Customer.Name" class="form-control" />
+                                    <ValidationMessage For="() => Customer.Name" class="text-danger" />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email:</label>
+                                    <InputText id="email" @bind-Value="Customer.Email" class="form-control" />
+                                    <ValidationMessage For="() => Customer.Email" class="text-danger" />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">Phone:</label>
+                                    <InputText id="phone" @bind-Value="Customer.Phone" class="form-control" />
+                                    <ValidationMessage For="() => Customer.Phone" class="text-danger" />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="address" class="form-label">Address:</label>
+                                    <InputText id="address" @bind-Value="Customer.Address" class="form-control" />
+                                    <ValidationMessage For="() => Customer.Address" class="text-danger" />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="city" class="form-label">City:</label>
+                                    <InputText id="city" @bind-Value="Customer.City" class="form-control" />
+                                    <ValidationMessage For="() => Customer.City" class="text-danger" />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="status" class="form-label">Status:</label>
+                                    <InputSelect id="status" @bind-Value="Customer.Status" class="form-control">
+                                        @foreach (var statusOption in Status.GetStatusOptions())
+                                        {
+                                            <option value="@statusOption">@statusOption</option>
+                                        }
+                                    </InputSelect>
+                                    <ValidationMessage For="() => Customer.Status" class="text-danger" />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="created" class="form-label">Created:</label>
+                                    <InputDate id="created" @bind-Value="Customer.Created" class="form-control" readonly />
+                                    <ValidationMessage For="() => Customer.Created" class="text-danger" />
+                                </div>
+                                <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                                <a href="/customers" class="btn btn-sm btn-secondary">Back to List</a>
+                            </EditForm>
+                        </div>
+                    </div>
+                }
+
+            </div>
         </div>
     </div>
-}
-
-<div>
-    <a href="/customers">Back to List</a>
 </div>
+
 
 @code {
     [SupplyParameterFromQuery]
