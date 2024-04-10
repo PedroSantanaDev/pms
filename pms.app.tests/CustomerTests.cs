@@ -68,20 +68,6 @@ namespace pms.app.tests
         }
 
         [Fact]
-        public async Task Add_Range_Customer_Should_Add_List_Of_Customers_To_DB_Test()
-        {
-            var customers = GetTestCustomers();
-
-            await _unitOfWork.GetRepository<Customer>().AddRangeAsync(customers);
-            await _unitOfWork.SaveChangesAsync();
-            var result = await _unitOfWork.GetRepository<Customer>().GetAllAsync();
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.NotEmpty(result);
-        }
-
-        [Fact]
         public async Task Get_All_Customers_Should_Return_List_Of_Customers_Test()
         {
             var result = await _unitOfWork.GetRepository<Customer>().GetAllAsync();

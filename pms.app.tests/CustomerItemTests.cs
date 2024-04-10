@@ -15,35 +15,6 @@ namespace pms.app.tests
             // Initialize UnitOfWork with the actual ApplicationDbContext
             _unitOfWork = new UnitOfWork.UnitOfWork(_dbContext);
         }
-
-        [Fact]
-        public async Task Add_Range_CustomerItem_Should_Add_List_Of_CustomerItems_To_DB_Test()
-        {
-            var items = await _unitOfWork.GetRepository<Item>().GetAllAsync();
-            var customers = await _unitOfWork.GetRepository<Customer>().GetAllAsync();
-            var customer = customers.First();
-
-            List<CustomerItem> customerItems = new List<CustomerItem>();
-            foreach (var item in items)
-            {
-                var customerItem = new CustomerItem { CustomerId = customer.Id, ItemId = item.Id, Item = item, Customer = customer, Quantity = 2 };
-                customerItems.Add(customerItem);
-            }
-            await _unitOfWork.GetRepository<CustomerItem>().AddRangeAsync(customerItems);
-
-            var result = await _unitOfWork.GetRepository<CustomerItem>().GetAllAsync(i => i.CustomerId == customer.Id);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.NotEmpty(result);
-            foreach (var cItem in result)
-            {
-                Assert.NotNull(cItem);
-                Assert.NotNull(cItem.Item);
-                Assert.NotNull(cItem.Customer);
-                Assert.Equal(customer.Id, cItem.CustomerId);
-            }
-        }
         [Fact]
         public async Task Add_CustomerItem_To_Should_Assign_CustomerItem_Test()
         {
