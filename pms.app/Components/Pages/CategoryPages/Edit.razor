@@ -12,45 +12,56 @@
 
 <PageTitle>Edit</PageTitle>
 
-<h1>Edit</h1>
 
-<h4>Category</h4>
-<hr />
-@if (Category is null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <div class="row">
-        <div class="col-md-4">
-            <EditForm method="post" Model="Category" OnValidSubmit="UpdateCategory" FormName="edit" Enhance>
-                <DataAnnotationsValidator />
-                <ValidationSummary class="text-danger" />
-                <input type="hidden" name="Category.Id" value="@Category.Id" />
-                <div class="mb-3">
-                    <label for="name" class="form-label">Name:</label>
-                    <InputText id="name" @bind-Value="Category.Name" class="form-control" />
-                    <ValidationMessage For="() => Category.Name" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="description" class="form-label">Description:</label>
-                    <InputTextArea rows="4" id="description" @bind-Value="Category.Description" class="form-control" />
-                    <ValidationMessage For="() => Category.Description" class="text-danger" />
-                </div>
-               <div class="mb-3">
-                    <label for="created" class="form-label">Created:</label>
-                    <InputDate id="created" @bind-Value="Category.Created" class="form-control" readonly />
-                    <ValidationMessage For="() => Category.Created" class="text-danger" />
-                </div>
-                <button type="submit" class="btn btn-primary">Save</button>
-            </EditForm>
+<div class="card">
+
+    <div class="card-header text-white bg-primary">
+        <h4>Edit Category</h4>
+    </div>
+
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+
+                @if (Category is null)
+                {
+                    <p><em>Loading...</em></p>
+                }
+                else
+                {
+                    <div class="row">
+                        <div class="col-md-6">
+                            <EditForm method="post" Model="Category" OnValidSubmit="UpdateCategory" FormName="edit" Enhance>
+                                <DataAnnotationsValidator />
+                                <ValidationSummary class="text-danger" />
+                                <input type="hidden" name="Category.Id" value="@Category.Id" />
+                                <div class="mb-3">
+                                    <label for="name" class="form-label text-dark"><strong>Name</strong></label>
+                                    <InputText id="name" @bind-Value="Category.Name" class="form-control" />
+                                    <ValidationMessage For="() => Category.Name" class="text-danger" />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="description" class="form-label"><strong>Description</strong></label>
+                                    <InputTextArea rows="4" id="description" @bind-Value="Category.Description" class="form-control" />
+                                    <ValidationMessage For="() => Category.Description" class="text-danger" />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="created" class="form-label"><strong>Created</strong></label>
+                                    <InputDate id="created" @bind-Value="Category.Created" class="form-control" readonly />
+                                    <ValidationMessage For="() => Category.Created" class="text-danger" />
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save</button>
+                                <a href="/categories" class="btn btn-secondary">Back to List</a>
+                            </EditForm>
+                        </div>
+                    </div>
+                }
+
+            </div>
         </div>
     </div>
-}
 
-<div>
-    <a href="/categories">Back to List</a>
 </div>
 
 @code {
@@ -69,7 +80,7 @@ else
             NavigationManager.NavigateTo("notfound");
         }
     }
-        
+
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more details, see https://aka.ms/RazorPagesCRUD.
     public async Task UpdateCategory()
@@ -81,7 +92,7 @@ else
             {
                 Category.Updated = DateTime.Now;
                 await unitOfWork.GetRepository<Category>().UpdateAsync(Category);
-            }      
+            }
         }
         catch (DbUpdateConcurrencyException)
         {

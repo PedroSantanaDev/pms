@@ -12,67 +12,83 @@
 
 <PageTitle>Details</PageTitle>
 
-<h1>Details</h1>
 
-<div>
-    <h4>Category</h4>
-    <hr />
-    @if (category is null)
-    {
-        <p><em>Loading...</em></p>
-    }
-    else
-    {
-        <dl class="row">
-            <dt class="col-sm-2">Name</dt>
-            <dd class="col-sm-10">@category.Name</dd>
-            <dt class="col-sm-2">Description</dt>
-            <dd class="col-sm-10">@category.Description</dd>
-            <dt class="col-sm-2">Created</dt>
-            <dd class="col-sm-10">@category.Created</dd>
-            <dt class="col-sm-2">Updated</dt>
-            <dd class="col-sm-10">@category.Updated</dd>
-        </dl>
+<div class="card">
 
-        <h5>Category Items</h5>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Number (SKU)</th>
-                    <th>Name</th>
-                    <th>Category</th>
-                    <th>Price</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (category.Items.Any())
+    <div class="card-header text-white bg-primary">
+        <h4>Category Details</h4>
+    </div>
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+
+                @if (category is null)
                 {
-                    @foreach (var item in category.Items)
-                    {
-                        <tr>
-                            <td>@item.SKU</td>
-                            <td>@item.Name</td>
-                            <td>@category.Name</td>
-                            <td>@item.Price.ToString("C", CultureInfo.CurrentCulture)</td>
-                            <td>@item.Status</td>
-                        </tr>
-                    }
+                    <p><em>Loading...</em></p>
                 }
                 else
                 {
-                    <tr>
-                        <td colspan="2">No items assigned to this customer.</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                    <dl class="row">
+                        <dt class="col-sm-2">Name:</dt>
+                        <dd class="col-sm-10">@category.Name</dd>
+                        <dt class="col-sm-2">Description:</dt>
+                        <dd class="col-sm-10">@category.Description</dd>
+                        <dt class="col-sm-2">Created:</dt>
+                        <dd class="col-sm-10">@category.Created</dd>
+                        <dt class="col-sm-2">Updated:</dt>
+                        <dd class="col-sm-10">@category.Updated</dd>
+                    </dl>
 
-        <div>
-            <a href="@($"/categories/edit?id={category.Id}")">Edit</a> |
-            <a href="@($"/categories")">Back to List</a>
+                    <div>
+                        <a href="@($"/categories/edit?id={category.Id}")" class="btn btn-danger text-white">Edit</a>
+                        <a href="@($"/categories")" class="btn btn-secondary">Back to List</a>
+                    </div>
+
+                    <hr />
+
+                    <h5>Category Items</h5>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Number (SKU)</th>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (category.Items.Any())
+                            {
+                                @foreach (var item in category.Items)
+                                {
+                                    <tr>
+                                        <td>@item.SKU</td>
+                                        <td>@item.Name</td>
+                                        <td>@category.Name</td>
+                                        <td>@item.Price.ToString("C", CultureInfo.CurrentCulture)</td>
+                                        <td>@item.Status</td>
+                                        <td>
+                                            <a href="@($"/items/details?id={item.Id}")" class="btn btn-info text-white">View</a>
+                                            <a href="@($"/items/edit?id={item.Id}")" class="btn btn-primary">Edit</a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="2">No items assigned to this customer.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+
+            </div>
         </div>
-    }
+    </div>
 </div>
 
 @code {
