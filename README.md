@@ -25,21 +25,20 @@ Before running the setup script, ensure you have the following prerequisites ins
 - [.NET SDK](https://dotnet.microsoft.com/download) (version 8) the setup will try to install .NET if it is not install but if it fails please install manually
 - PowerShell (version 5.1 or later recommended)
 
-## Setup Instructions - Manual Download or Using Git
+## Setup Instructions
 
-### Manual Download
+### Manually Download The Project
 
-When using this option make sure you do not have some agresive Antivirus that might consider the zip contain a virus.
+When using this option make sure you do not have some agresive Antivirus that might consider the zip contains a virus.
 
 You can manually download the project as a ZIP file by following these steps:
 
-1. Navigate to the repository on GitHub: https://github.com/PedroSantanaDev/pms.git
-2. Click on the green "Code" button located near the top-right corner of the page.
-3. Select "Download ZIP" from the dropdown menu.
-4. Save the ZIP file to your desired location on your local machine.
-5. Extract the contents of the ZIP file to a folder.
+1. Click on the green "Code" button located near the top-right corner.
+2. Select "Download ZIP" from the dropdown menu.
+3. Save the ZIP file to your desired location on your local machine.
+4. Extract the contents of the ZIP file to a folder.
 
-###  Using Git
+###  Clone Using Git
 
 You can clone the repository to your local machine using Git.
 
@@ -65,6 +64,7 @@ If you prefer to use the Windows interface, you can navigate to the project dire
 4. Once you are inside the directory pms/pms.app right-click on the `setup.ps1` file.
 5. Select "Run with PowerShell" from the context menu.
    6. If you dont see a "Run with PowerShell" option select the option "Open in Terminal" and type .\setup.ps1 then hit enter.
+   7. If see a security warning prompt click on Open
 6. **Follow the On-Screen Instructions:** The setup script will perform the following tasks:
    - Check if the .NET SDK is installed and install it if necessary.
    - Restore NuGet packages.
