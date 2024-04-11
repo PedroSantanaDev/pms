@@ -25,9 +25,11 @@ Before running the setup script, ensure you have the following prerequisites ins
 - [.NET SDK](https://dotnet.microsoft.com/download) (version 8) the setup will try to install .NET if it is not install but if it fails please install manually
 - PowerShell (version 5.1 or later recommended)
 
-## Setup Instructions
+## Setup Instructions - Manual Download or Using Git
 
 ### Manual Download
+
+When using this option make sure you do not have some agresive Antivirus that might consider the zip contain a virus.
 
 You can manually download the project as a ZIP file by following these steps:
 
@@ -62,12 +64,12 @@ If you prefer to use the Windows interface, you can navigate to the project dire
 3. Navigate to pms/pms.app to directory.
 4. Once you are inside the directory pms/pms.app right-click on the `setup.ps1` file.
 5. Select "Run with PowerShell" from the context menu.
+   6. If you dont see a "Run with PowerShell" option select the option "Open in Terminal" and type .\setup.ps1 then hit enter.
 6. **Follow the On-Screen Instructions:** The setup script will perform the following tasks:
    - Check if the .NET SDK is installed and install it if necessary.
    - Restore NuGet packages.
    - Apply Entity Framework Core migrations.
    - Start the Blazor app in the default web browser.
-
 
 #### Using Command Line
 
@@ -96,7 +98,7 @@ If you're comfortable with the command line, follow these steps:
 
 ## Access the App
 
-Once the setup process is complete, the Blazor app will automatically open in your default web browser. If it doesn't open automatically, you can access the app by navigating to the URL displayed in your terminal or command prompt after running the setup script.
+Once the setup process is complete, the Blazor app will automatically open in your default web browser. If it doesn't open automatically, you can access the app by navigating to the URL displayed in your terminal in the message "Now listening on:" or command prompt after running the setup script.
 
 ### Sign In
 
@@ -107,5 +109,7 @@ The app requires authentication, please use the credentials below to sign in
    - Password: Megatron4584$$
 5. Click on the "Log In" button to authenticate.
 6. Once authenticated, you should have access to the all app's features.
+
+For project documentation please visit the [Wiki](https://github.com/PedroSantanaDev/pms/wiki)
 
 If you encounter any issues during the sign-in process, please refer to the app's documentation or contact the app's administrator for assistance.
