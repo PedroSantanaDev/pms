@@ -11,80 +11,90 @@
 
 <PageTitle>Details</PageTitle>
 
-<h1>Details</h1>
+<div class="card">
 
-<div>
-    <h4>Item</h4>
-    <hr />
-    @if (item is null)
-    {
-        <p><em>Loading...</em></p>
-    }
-    else
-    {
-        <dl class="row">
-            <dt class="col-sm-2">Item Number (SKU)</dt>
-            <dd class="col-sm-10">@item.SKU</dd>
-            <dt class="col-sm-2">Name</dt>
-            <dd class="col-sm-10">@item.Name</dd>
-            <dt class="col-sm-2">Description</dt>
-            <dd class="col-sm-10">@item.Description</dd>
-            <dt class="col-sm-2">Price</dt>
-            <dd class="col-sm-10">@item.Price.ToString("C", CultureInfo.CurrentCulture)</dd>
-            <dt class="col-sm-2">Status</dt>
-            <dd class="col-sm-10">@item.Status</dd>
+    <div class="card-header text-white bg-primary">
+        <h4>Item Details</h4>
+    </div>
 
-            @if (item.Category != null)
-            {
-                <dt class="col-sm-2">Category Name </dt>
-                <dd class="col-sm-10">@item.Category.Name</dd>
-            }
-            <dt class="col-sm-2">Created</dt>
-            <dd class="col-sm-10">@item.Created</dd>
-            <dt class="col-sm-2">Updated</dt>
-            <dd class="col-sm-10">@item.Updated</dd>
-        </dl>
-
-
-        <h5>Item Customers</h5>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Customer Name</th>
-                    <th>Address</th>
-                    <th>City</th>
-                    <th>Email</th>
-                    <th>Date Assinged</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (CustomerItems.Any())
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                @if (item is null)
                 {
-                    @foreach (var customerItem in CustomerItems)
-                    {
-                        <tr>
-                            <td>@customerItem.Customer.Name</td>
-                            <td>@customerItem.Customer.Address</td>
-                            <td>@customerItem.Customer.City</td>
-                            <td>@customerItem.Customer.Email</td>
-                            <td>@customerItem.AssignedDate</td>
-                        </tr>
-                    }
+                    <p><em>Loading...</em></p>
                 }
                 else
                 {
-                    <tr>
-                        <td colspan="2">Item not assigned to any customer.</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                    <dl class="row">
+                        <dt class="col-sm-2">Item Number (SKU)</dt>
+                        <dd class="col-sm-10">@item.SKU</dd>
+                        <dt class="col-sm-2">Name</dt>
+                        <dd class="col-sm-10">@item.Name</dd>
+                        <dt class="col-sm-2">Description</dt>
+                        <dd class="col-sm-10">@item.Description</dd>
+                        <dt class="col-sm-2">Price</dt>
+                        <dd class="col-sm-10">@item.Price.ToString("C", CultureInfo.CurrentCulture)</dd>
+                        <dt class="col-sm-2">Status</dt>
+                        <dd class="col-sm-10">@item.Status</dd>
 
-        <div>
-            <a href="@($"/items/edit?id={item.Id}")">Edit</a> |
-            <a href="@($"/items")">Back to List</a>
+                        @if (item.Category != null)
+                        {
+                            <dt class="col-sm-2">Category Name </dt>
+                            <dd class="col-sm-10">@item.Category.Name</dd>
+                        }
+                        <dt class="col-sm-2">Created</dt>
+                        <dd class="col-sm-10">@item.Created</dd>
+                        <dt class="col-sm-2">Updated</dt>
+                        <dd class="col-sm-10">@item.Updated</dd>
+                    </dl>
+
+                    <div>
+                        <a href="@($"/items/edit?id={item.Id}")" class="btn btn-sm btn-warning text-white">Edit</a>
+                        <a href="@($"/items")" class="btn btn-sm btn-secondary">Back to List</a>
+                    </div>
+
+                    <h5>Item Customers</h5>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Customer Name</th>
+                                <th>Address</th>
+                                <th>City</th>
+                                <th>Email</th>
+                                <th>Date Assinged</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (CustomerItems.Any())
+                            {
+                                @foreach (var customerItem in CustomerItems)
+                                {
+                                    <tr>
+                                        <td>@customerItem.Customer.Name</td>
+                                        <td>@customerItem.Customer.Address</td>
+                                        <td>@customerItem.Customer.City</td>
+                                        <td>@customerItem.Customer.Email</td>
+                                        <td>@customerItem.AssignedDate</td>
+                                        <td>
+                                            <a href="@($"/customers/details?id={customerItem.Item.Id}")" class="btn btn-sm btn-info text-white">View</a>
+                                            <a href="@($"/customers/edit?id={customerItem.Item.Id}")" class="btn btn-sm btn-warning">Edit</a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="2">Item not assigned to any customer.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
         </div>
-    }
+    </div>
 </div>
 
 @code {
@@ -103,7 +113,7 @@
         // Set up includeProperties
         string includeProperties = "Category";
 
-        // Set up pagination
+        // Set up pagination to max 500 records, out-of-scope
         int page = 1;
         int pageSize = 500;
 

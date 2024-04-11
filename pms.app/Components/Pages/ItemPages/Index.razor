@@ -8,48 +8,59 @@
 @inject NavigationManager NavigationManager
 @attribute [Authorize]
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Items</PageTitle>
 
-<h1>Index</h1>
 
-<p>
-    <a href="items/create">Create New</a>
-</p>
+<div class="card">
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Item Number (SKU)</th>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Price</th>
-            <th>Status</th>
-            <th>Category</th>
-            <th>Created</th>
-            <th>Update</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Items)
-        {
-            <tr>
-                <td>@item.SKU</td>
-                <td>@item.Name</td>
-                <td>@item.Description</td>
-                <td>@item.Price</td>
-                <td>@item.Status</td>
-                <td>@item.Category?.Name</td>
-                <td>@item.Created</td>
-                <td>@item.Updated</td>
-                <td>
-                    <a href="@($"items/edit?id={item.Id}")">Edit</a> |
-                    <a href="@($"items/details?id={item.Id}")">Details</a> |
-                    <a href="@($"items/delete?id={item.Id}")">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+    <div class="card-header text-white bg-primary">
+        <h4>Items</h4>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                <p>
+                    <a href="items/create" class="btn btn-primary">Add New</a>
+                </p>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Item Number (SKU)</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Category</th>
+                            <th>Created</th>
+                            <th>Update</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Items)
+                        {
+                            <tr>
+                                <td>@item.SKU</td>
+                                <td>@item.Name</td>
+                                <td>@item.Description</td>
+                                <td>@item.Price</td>
+                                <td>@item.Status</td>
+                                <td>@item.Category?.Name</td>
+                                <td>@item.Created</td>
+                                <td>@item.Updated</td>
+                                <td>
+                                    <a href="@($"items/edit?id={item.Id}")" class="btn btn-sm btn-warning">Edit</a>
+                                    <a href="@($"items/details?id={item.Id}")" class="btn btn-sm btn-info">Details</a>
+                                    <a href="@($"items/delete?id={item.Id}")" class="btn btn-sm btn-danger">Delete</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
 
 
 @code {
@@ -65,7 +76,7 @@
         // Set up includeProperties
         string includeProperties = "Category";
 
-        // Set up pagination
+        // Set up pagination to max 500 records, out-of-scope
         int page = 1;
         int pageSize = 500;
 

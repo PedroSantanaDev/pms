@@ -12,84 +12,92 @@
 
 <PageTitle>Edit</PageTitle>
 
-<h1>Edit</h1>
 
-<h4>Item</h4>
-<hr />
-@if (Item is null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <div class="row">
-        <div class="col-md-4">
-            <EditForm method="post" Model="Item" OnValidSubmit="UpdateItem" FormName="edit" Enhance>
-                @if (!string.IsNullOrEmpty(ErrorMessage))
+<div class="card">
+
+    <div class="card-header text-white bg-primary">
+        <h4>Edit Item</h4>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                @if (Item is null)
                 {
-                    <div class="text-danger">@ErrorMessage</div>
+                    <p><em>Loading...</em></p>
                 }
-                <DataAnnotationsValidator />
-                <input type="hidden" name="Item.Id" value="@Item.Id" />
-                <div class="mb-3">
-                    <label for="sku" class="form-label">Item Number (SKU):</label>
-                    <InputNumber id="sku" @bind-Value="Item.SKU" class="form-control" />
-                    <ValidationMessage For="() => Item.SKU" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="name" class="form-label">Name:</label>
-                    <InputText id="name" @bind-Value="Item.Name" class="form-control" />
-                    <ValidationMessage For="() => Item.Name" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="description" class="form-label">Description:</label>
-                    <InputTextArea rows="4" id="description" @bind-Value="Item.Description" class="form-control" />
-                    <ValidationMessage For="() => Item.Description" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="price" class="form-label">Price:</label>
-                    <InputNumber id="price" @bind-Value="Item.Price" class="form-control" />
-                    <ValidationMessage For="() => Item.Price" class="text-danger" />
-                </div>
+                else
+                {
+                    <div class="row">
+                        <div class="col-md-4">
+                            <EditForm method="post" Model="Item" OnValidSubmit="UpdateItem" FormName="edit" Enhance>
+                                @if (!string.IsNullOrEmpty(ErrorMessage))
+                                {
+                                    <div class="text-danger">@ErrorMessage</div>
+                                }
+                                <DataAnnotationsValidator />
+                                <input type="hidden" name="Item.Id" value="@Item.Id" />
+                                <div class="mb-3">
+                                    <label for="sku" class="form-label">Item Number (SKU):</label>
+                                    <InputNumber id="sku" @bind-Value="Item.SKU" class="form-control" />
+                                    <ValidationMessage For="() => Item.SKU" class="text-danger" />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Name:</label>
+                                    <InputText id="name" @bind-Value="Item.Name" class="form-control" />
+                                    <ValidationMessage For="() => Item.Name" class="text-danger" />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Description:</label>
+                                    <InputTextArea rows="4" id="description" @bind-Value="Item.Description" class="form-control" />
+                                    <ValidationMessage For="() => Item.Description" class="text-danger" />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="price" class="form-label">Price:</label>
+                                    <InputNumber id="price" @bind-Value="Item.Price" class="form-control" />
+                                    <ValidationMessage For="() => Item.Price" class="text-danger" />
+                                </div>
 
 
-                <div class="mb-3">
-                    <label for="status" class="form-label">Status:</label>
-                    <InputSelect id="status" @bind-Value="Item.Status" class="form-control">
-                        @foreach (var statusOption in Status.GetStatusOptions())
-                        {
-                            <option value="@statusOption">@statusOption</option>
-                        }
-                    </InputSelect>
-                    <ValidationMessage For="() => Item.Status" class="text-danger" />
-                </div>
+                                <div class="mb-3">
+                                    <label for="status" class="form-label">Status:</label>
+                                    <InputSelect id="status" @bind-Value="Item.Status" class="form-control">
+                                        @foreach (var statusOption in Status.GetStatusOptions())
+                                        {
+                                            <option value="@statusOption">@statusOption</option>
+                                        }
+                                    </InputSelect>
+                                    <ValidationMessage For="() => Item.Status" class="text-danger" />
+                                </div>
 
-                <div class="mb-3">
-                    <label for="category" class="form-label">Category:</label>
-                    <InputSelect id="category" @bind-Value="Item.CategoryId" class="form-control">
-                        <option value="0"></option>
-                        @foreach (var category in Categories)
-                        {
-                            <option value="@category.Id">@category.Name</option>
-                        }
-                    </InputSelect>
-                    <ValidationMessage For="@(() => Item.CategoryId)" class="text-danger" />
-                </div>
+                                <div class="mb-3">
+                                    <label for="category" class="form-label">Category:</label>
+                                    <InputSelect id="category" @bind-Value="Item.CategoryId" class="form-control">
+                                        <option value="0"></option>
+                                        @foreach (var category in Categories)
+                                        {
+                                            <option value="@category.Id">@category.Name</option>
+                                        }
+                                    </InputSelect>
+                                    <ValidationMessage For="@(() => Item.CategoryId)" class="text-danger" />
+                                </div>
 
-                <div class="mb-3">
-                    <label for="created" class="form-label">Created:</label>
-                    <InputDate id="created" @bind-Value="Item.Created" class="form-control" readonly />
-                    <ValidationMessage For="() => Item.Created" class="text-danger" />
-                </div>
-
-                <button type="submit" class="btn btn-primary">Save</button>
-            </EditForm>
+                                <div class="mb-3">
+                                    <label for="created" class="form-label">Created:</label>
+                                    <InputDate id="created" @bind-Value="Item.Created" class="form-control" readonly />
+                                    <ValidationMessage For="() => Item.Created" class="text-danger" />
+                                </div>
+                                <div>
+                                    <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                                    <a href="/items" class="btn btn-sm btn-secondary">Back to List</a>
+                                </div>
+                            </EditForm>
+                        </div>
+                    </div>
+                }
+            </div>
         </div>
     </div>
-}
 
-<div>
-    <a href="/items">Back to List</a>
 </div>
 
 @code {
