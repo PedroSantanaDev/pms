@@ -24,7 +24,7 @@
                     <a href="customeritems/create" class="btn btn-primary">Add New</a>
                 </p>
 
-                <table class="table">
+                <table class="table table-striped">
                     <thead>
                         <tr>
                             <th>Customer</th>
@@ -75,7 +75,7 @@
         // Set up includeProperties
         string includeProperties = "Item,Item.Category,Customer";
 
-        // Set up pagination
+        // Set up pagination to max 500 records, out-of-scope
         int page = 1;
         int pageSize = 500;
 

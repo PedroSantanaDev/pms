@@ -74,7 +74,7 @@
 
 @if (customersWithItems != null)
 {
-    <table class="table">
+    <table class="table table-striped">
         <thead>
             <tr>
                 <th>Customer Name</th>
@@ -102,7 +102,6 @@
 }
 
 @code {
-    // Properties
     private int startSku;
     private int endSku;
     private List<CustomerItem> customersWithItems;
@@ -115,7 +114,6 @@
         Items ??= await unitOfWork.GetRepository<Item>().GetAllAsync(null, orderBy, null, 1, 500);
     }
 
-    // Method to generate report
     private async Task GenerateReport()
     {
         if (!IsValidRange())
@@ -128,7 +126,6 @@
                          includeProperties: "Customer,Item");
     }
 
-    // Method to validate the SKU range
     private bool IsValidRange()
     {
         return endSku >= startSku;
