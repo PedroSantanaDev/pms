@@ -37,29 +37,29 @@
                                 <DataAnnotationsValidator />
                                 <input type="hidden" name="Item.Id" value="@Item.Id" />
                                 <div class="mb-3">
-                                    <label for="sku" class="form-label">Item Number (SKU):</label>
+                                    <label for="sku" class="form-label font-weight-bold">Item Number (SKU):</label>
                                     <InputNumber id="sku" @bind-Value="Item.SKU" class="form-control" />
                                     <ValidationMessage For="() => Item.SKU" class="text-danger" />
                                 </div>
                                 <div class="mb-3">
-                                    <label for="name" class="form-label">Name:</label>
+                                    <label for="name" class="form-label font-weight-bold">Name:</label>
                                     <InputText id="name" @bind-Value="Item.Name" class="form-control" />
                                     <ValidationMessage For="() => Item.Name" class="text-danger" />
                                 </div>
                                 <div class="mb-3">
-                                    <label for="description" class="form-label">Description:</label>
+                                    <label for="description" class="form-label font-weight-bold">Description:</label>
                                     <InputTextArea rows="4" id="description" @bind-Value="Item.Description" class="form-control" />
                                     <ValidationMessage For="() => Item.Description" class="text-danger" />
                                 </div>
                                 <div class="mb-3">
-                                    <label for="price" class="form-label">Price:</label>
+                                    <label for="price" class="form-label font-weight-bold">Price:</label>
                                     <InputNumber id="price" @bind-Value="Item.Price" class="form-control" />
                                     <ValidationMessage For="() => Item.Price" class="text-danger" />
                                 </div>
 
 
                                 <div class="mb-3">
-                                    <label for="status" class="form-label">Status:</label>
+                                    <label for="status" class="form-label font-weight-bold">Status:</label>
                                     <InputSelect id="status" @bind-Value="Item.Status" class="form-control">
                                         @foreach (var statusOption in Status.GetStatusOptions())
                                         {
@@ -70,7 +70,7 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="category" class="form-label">Category:</label>
+                                    <label for="category" class="form-label font-weight-bold">Category:</label>
                                     <InputSelect id="category" @bind-Value="Item.CategoryId" class="form-control">
                                         <option value="0"></option>
                                         @foreach (var category in Categories)
@@ -82,7 +82,7 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="created" class="form-label">Created:</label>
+                                    <label for="created" class="form-label font-weight-bold">Created:</label>
                                     <InputDate id="created" @bind-Value="Item.Created" class="form-control" readonly />
                                     <ValidationMessage For="() => Item.Created" class="text-danger" />
                                 </div>

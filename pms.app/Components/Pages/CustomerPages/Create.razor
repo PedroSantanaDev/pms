@@ -23,32 +23,32 @@
                         <DataAnnotationsValidator />
                         <ValidationSummary class="text-danger" />
                         <div class="mb-3">
-                            <label for="name" class="form-label">Name:</label>
+                            <label for="name" class="form-label font-weight-bold">Name:</label>
                             <InputText id="name" @bind-Value="Customer.Name" class="form-control" />
                             <ValidationMessage For="() => Customer.Name" class="text-danger" />
                         </div>
                         <div class="mb-3">
-                            <label for="email" class="form-label">Email:</label>
+                            <label for="email" class="form-label font-weight-bold">Email:</label>
                             <InputText id="email" @bind-Value="Customer.Email" class="form-control" />
                             <ValidationMessage For="() => Customer.Email" class="text-danger" />
                         </div>
                         <div class="mb-3">
-                            <label for="phone" class="form-label">Phone:</label>
+                            <label for="phone" class="form-label font-weight-bold">Phone:</label>
                             <InputText id="phone" @bind-Value="Customer.Phone" class="form-control" />
                             <ValidationMessage For="() => Customer.Phone" class="text-danger" />
                         </div>
                         <div class="mb-3">
-                            <label for="address" class="form-label">Address:</label>
+                            <label for="address" class="form-label font-weight-bold">Address:</label>
                             <InputText id="address" @bind-Value="Customer.Address" class="form-control" />
                             <ValidationMessage For="() => Customer.Address" class="text-danger" />
                         </div>
                         <div class="mb-3">
-                            <label for="city" class="form-label">City:</label>
+                            <label for="city" class="form-label font-weight-bold">City:</label>
                             <InputText id="city" @bind-Value="Customer.City" class="form-control" />
                             <ValidationMessage For="() => Customer.City" class="text-danger" />
                         </div>
                         <div class="mb-3">
-                            <label for="status" class="form-label">Status:</label>
+                            <label for="status" class="form-label font-weight-bold">Status:</label>
                             <InputSelect id="status" @bind-Value="Customer.Status" class="form-control">
                                 @foreach (var statusOption in Status.GetStatusOptions())
                                 {

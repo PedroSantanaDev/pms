@@ -37,17 +37,17 @@
                                 <ValidationSummary class="text-danger" />
                                 <input type="hidden" name="Category.Id" value="@Category.Id" />
                                 <div class="mb-3">
-                                    <label for="name" class="form-label text-dark"><strong>Name</strong></label>
+                                    <label for="name" class="form-label font-weight-bold"><strong>Name</strong></label>
                                     <InputText id="name" @bind-Value="Category.Name" class="form-control" />
                                     <ValidationMessage For="() => Category.Name" class="text-danger" />
                                 </div>
                                 <div class="mb-3">
-                                    <label for="description" class="form-label"><strong>Description</strong></label>
+                                    <label for="description" class="form-label font-weight-bold"><strong>Description</strong></label>
                                     <InputTextArea rows="4" id="description" @bind-Value="Category.Description" class="form-control" />
                                     <ValidationMessage For="() => Category.Description" class="text-danger" />
                                 </div>
                                 <div class="mb-3">
-                                    <label for="created" class="form-label"><strong>Created</strong></label>
+                                    <label for="created" class="form-label font-weight-bold"><strong>Created</strong></label>
                                     <InputDate id="created" @bind-Value="Category.Created" class="form-control" readonly />
                                     <ValidationMessage For="() => Category.Created" class="text-danger" />
                                 </div>

@@ -21,12 +21,12 @@
                     <DataAnnotationsValidator />
                     <input type="hidden" name="Category.Id" value="@Category.Id" />
                     <div class="mb-3">
-                        <label for="name" class="form-label">Name:</label>
+                        <label for="name" class="form-label font-weight-bold">Name:</label>
                         <InputText id="name" @bind-Value="Category.Name" class="form-control" />
                         <ValidationMessage For="() => Category.Name" class="text-danger" />
                     </div>
                     <div class="mb-3">
-                        <label for="description" class="form-label">Description:</label>
+                        <label for="description" class="form-label font-weight-bold">Description:</label>
                         <InputTextArea rows="4" id="description" @bind-Value="Category.Description" class="form-control" />
                         <ValidationMessage For="() => Category.Description" class="text-danger" />
                     </div>
