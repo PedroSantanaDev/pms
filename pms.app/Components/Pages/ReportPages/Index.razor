@@ -13,40 +13,55 @@
 
 <PageTitle>Reports</PageTitle>
 
-<h1>Reports</h1>
 
-<div>
-    <a href="expensiveitemsreport">
-        <button type="button" class="btn btn-primary">Customers with X Most Expensive Items Report</button>
-    </a>
+<div class="card">
+
+    <div class="card-header text-white bg-primary">
+        <h4>Reports</h4>
+    </div>
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+
+                <div>
+                    <a href="expensiveitemsreport">
+                        <button type="button" class="btn btn-primary">Customers with X Most Expensive Items Report</button>
+                    </a>
+                </div>
+
+                <hr />
+                <form class="row">
+                    <div class="form-group col-sm-3">
+                        <label for="startSku"><strong>Start Item Number</strong></label>
+                        <select class="form-control" id="startSku" @bind="startSku" required>
+                            @foreach (var item in Items)
+                            {
+                                <option value="@item.SKU">@item.SKU</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-group col-sm-3">
+                        <label for="endSku"><strong>End Item Number</strong></label>
+                        <select class="form-control" id="endSku" @bind="endSku" required>
+                            @foreach (var item in Items)
+                            {
+                                <option value="@item.SKU">@item.SKU</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-group col-sm-3 align-self-end">
+                        <button type="button" class="btn btn-success btn-block" @onclick="GenerateReport">Generate</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 </div>
 
-<hr />
-<form class="row">
-    <div class="form-group col-sm-3">
-        <label for="startSku"><strong>Start Item Number</strong></label>
-        <select class="form-control" id="startSku" @bind="startSku" required>
-            @foreach (var item in Items)
-            {
-                <option value="@item.SKU">@item.SKU</option>
-            }
-        </select>
-    </div>
-
-    <div class="form-group col-sm-3">
-        <label for="endSku"><strong>End Item Number</strong></label>
-        <select class="form-control" id="endSku" @bind="endSku" required>
-            @foreach (var item in Items)
-            {
-                <option value="@item.SKU">@item.SKU</option>
-            }
-        </select>
-    </div>
-
-    <div class="form-group col-sm-3 align-self-end">
-        <button type="button" class="btn btn-success btn-block" @onclick="GenerateReport">Generate</button>
-    </div>
-</form>
 
 @if (!IsValidRange())
 {
