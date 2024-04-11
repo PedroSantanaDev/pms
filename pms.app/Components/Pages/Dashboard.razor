@@ -1,0 +1,352 @@
+﻿@page "/"
+
+@using Microsoft.AspNetCore.Authorization
+@using ChartJs.Blazor;
+@using ChartJs.Blazor.Common
+@using ChartJs.Blazor.Common.Axes
+@using ChartJs.Blazor.Common.Axes.Ticks
+@using ChartJs.Blazor.Common.Enums
+@using ChartJs.Blazor.Common.Handlers
+@using ChartJs.Blazor.Common.Time
+@using ChartJs.Blazor.Util
+@using ChartJs.Blazor.Interop
+@using ChartJs.Blazor.PieChart
+@using ChartJs.Blazor.BarChart
+@using Microsoft.JSInterop
+@using Microsoft.EntityFrameworkCore
+@using pms.app.Models
+@using System.Linq.Expressions;
+
+
+@rendermode InteractiveServer
+@inject IJSRuntime JSRuntime
+@inject UnitOfWork.IUnitOfWork unitOfWork
+@inject NavigationManager NavigationManager
+
+@attribute [Authorize]
+
+<PageTitle>Dashboard</PageTitle>
+
+<div class="card">
+
+    <div class="card-header text-white bg-primary">
+        <h4>Dashboard</h4>
+    </div>
+
+    <div class="card-body">
+
+        <div class="row">
+
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <Chart Config="_categoriesConfig"></Chart>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <Chart Config="_customerConfig"></Chart>
+                </div>
+            </div>
+
+            <div class="col-sm-12 col-md-12 col-lg-6">
+                <Chart Config="_itemConfig"></Chart>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-6">
+                <Chart Config="_customerItemConfig"></Chart>
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+
+@code {
+    private Random _random;
+    private PieConfig _categoriesConfig;
+    private BarConfig _customerConfig;
+    private BarConfig _customerItemConfig;
+    private BarConfig _itemConfig;
+    private List<Category> _categories;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _random ??= new Random();
+
+        await LoadCategoriesData();
+        await LoadcustomersData();
+        await LoadCustomerItemData();
+        await LoadItemsData();
+    }
+
+    private async Task LoadcustomersData()
+    {
+        _customerConfig ??= new BarConfig
+            {
+                Options = new BarOptions
+                {
+                    Responsive = true,
+                    Title = new OptionsTitle
+                    {
+                        Display = true,
+                        Text = "Customer Distribution by City"
+                    }
+                }
+            };
+
+        var cities = await GetCustomerCities();
+
+        if (cities != null && cities.Any())
+        {
+            foreach (var city in cities)
+            {
+                var dataset = new BarDataset<int>();
+                dataset.Label = city.Key;
+                dataset.Add(city.Value);
+                dataset.BackgroundColor = GetRandomColour(_random);
+                _customerConfig.Data.Datasets.Add(dataset);
+            }
+        }
+    }
+    private async Task LoadCategoriesData()
+    {
+        _categoriesConfig ??= new PieConfig
+            {
+                Options = new PieOptions
+                {
+                    Responsive = true,
+                    Title = new OptionsTitle
+                    {
+                        Display = true,
+                        Text = "Top Categories by Item Count"
+                    }
+                }
+            };
+
+        _categories ??= await GetCategories();
+
+        if (_categories != null && _categories.Any())
+        {
+            var topCategories = _categories.OrderByDescending(category => category.Items?.Count ?? 0);
+
+            // Create a list to hold dataset colors and labels
+            var backgroundColors = new List<string>();
+            var labels = new List<string>();
+
+            foreach (var category in topCategories)
+            {
+                // Retrieve the count of items for the current category
+                var itemCount = category.Items?.Count ?? 0;
+
+                // Generate a random color for each category
+                var randomColor = GetRandomColour(_random);
+
+                // Add the random color to the list
+                backgroundColors.Add(randomColor);
+
+                // Add the category name to the labels list
+                labels.Add(category.Name);
+
+                Console.WriteLine($"Label: {category.Name}, Count: {itemCount}");
+            }
+
+            // Create the dataset outside the loop
+            var dataset = new PieDataset<int>(topCategories.Select(category => category.Items?.Count ?? 0).ToArray())
+                {
+                    BackgroundColor = backgroundColors.ToArray()
+                };
+
+            _categoriesConfig.Data.Datasets.Add(dataset);
+
+            // Ensure the _config.Data.Labels collection has enough elements
+            while (_categoriesConfig.Data.Labels.Count < labels.Count)
+            {
+                _categoriesConfig.Data.Labels.Add("");
+            }
+
+            // Assign labels
+            for (int i = 0; i < labels.Count; i++)
+            {
+                _categoriesConfig.Data.Labels[i] = labels[i];
+            }
+        }
+        else
+        {
+            Console.WriteLine("No categories found.");
+        }
+    }
+    private async Task LoadItemsData()
+    {
+        _itemConfig ??= new BarConfig
+            {
+                Options = new BarOptions
+                {
+                    Responsive = true,
+                    Title = new OptionsTitle
+                    {
+                        Display = true,
+                        Text = "Items per category"
+                    }
+                }
+            };
+
+        var itemsByCategory = await GetItemsByCategory();
+
+        if (itemsByCategory != null && itemsByCategory.Any())
+        {
+            foreach (var category in itemsByCategory)
+            {
+                var dataset = new BarDataset<int>();
+                dataset.Label = category.Key;
+                dataset.Add(category.Value);
+                dataset.BackgroundColor = GetRandomColour(_random);
+                _itemConfig.Data.Datasets.Add(dataset);
+            }
+        }
+    }
+
+    private async Task LoadCustomerItemData()
+    {
+        _customerItemConfig ??= new BarConfig
+            {
+                Options = new BarOptions
+                {
+                    Responsive = true,
+                    Title = new OptionsTitle
+                    {
+                        Display = true,
+                        Text = "Distribution of quantities across different items"
+                    }
+                }
+            };
+        var quantityByItem = await GetQuantityByItem();
+        var random = new Random();
+
+        if (quantityByItem != null && quantityByItem.Any())
+        {
+            foreach (var item in quantityByItem)
+            {
+                var dataset = new BarDataset<int>();
+                dataset.Label = item.Key;
+                dataset.Add(item.Value);
+                dataset.BackgroundColor = GetRandomColour(_random);
+                _customerItemConfig.Data.Datasets.Add(dataset);
+            }
+        }
+    }
+
+    private async Task<Dictionary<string, int>> GetCustomerCities()
+    {
+        // Set up filter
+        Expression<Func<Customer, bool>> filter = i => i.City != null;
+
+        Func<IQueryable<Customer>, IOrderedQueryable<Customer>> orderBy = q => q.OrderBy(i => i.Name);
+
+        // Set up includeProperties
+        string includeProperties = "";
+
+        // Set up pagination to max 500 records, out-of-scope
+        int page = 1;
+        int pageSize = 500;
+
+        var customers = await unitOfWork.GetRepository<Customer>().GetAllAsync(
+            filter,
+            orderBy,
+            includeProperties,
+            page,
+            pageSize
+        );
+
+        var cityCounts = customers
+            .GroupBy(c => c.City)
+            .ToDictionary(g => g.Key ?? "Unknown", g => g.Count());
+
+        return cityCounts;
+    }
+
+    private async Task<List<Category>> GetCategories()
+    {
+        // Set up filter
+        Expression<Func<Category, bool>> filter = null;
+
+        Func<IQueryable<Category>, IOrderedQueryable<Category>> orderBy = q => q.OrderBy(i => i.Name);
+
+        // Set up includeProperties
+        string includeProperties = "Items";
+
+        // Set up pagination to max 500 records, out-of-scope
+        int page = 1;
+        int pageSize = 500;
+
+        var categories = await unitOfWork.GetRepository<Category>().GetAllAsync(
+            filter,
+            orderBy,
+            includeProperties,
+            page,
+            pageSize
+        );
+
+        return categories;
+    }
+    private async Task<Dictionary<string, int>> GetItemsByCategory()
+    {
+        // Set up filter
+        Expression<Func<Item, bool>> filter = i => true;
+
+        Func<IQueryable<Item>, IOrderedQueryable<Item>> orderBy = q => q.OrderBy(i => i.Name);
+
+        // Set up includeProperties
+        string includeProperties = "Category";
+
+        // Set up pagination to max 500 records, out-of-scope
+        int page = 1;
+        int pageSize = 500;
+
+        var items = await unitOfWork.GetRepository<Item>().GetAllAsync(
+            filter,
+            orderBy,
+            includeProperties,
+            page,
+            pageSize
+        );
+
+        var itemsByCategory = items
+            .Where(i => i.Category != null)
+            .GroupBy(i => i.Category.Name)
+            .ToDictionary(g => g.Key, g => g.Count());
+
+        return itemsByCategory;
+    }
+    private async Task<Dictionary<string, int>> GetQuantityByItem()
+    {
+        // Set up filter
+        Expression<Func<CustomerItem, bool>> filter = i => true;
+
+        Func<IQueryable<CustomerItem>, IOrderedQueryable<CustomerItem>> orderBy = q => q.OrderBy(i => i.Item.Name);
+
+        // Set up includeProperties
+        string includeProperties = "Item";
+
+        // Set up pagination to max 500 records, out-of-scope
+        int page = 1;
+        int pageSize = 500;
+
+        var customerItems = await unitOfWork.GetRepository<CustomerItem>().GetAllAsync(
+            filter,
+            orderBy,
+            includeProperties,
+            page,
+            pageSize
+        );
+
+        var quantityByItem = customerItems
+            .Where(ci => ci.Item != null)
+            .GroupBy(ci => ci.Item.Name)
+            .ToDictionary(g => g.Key, g => g.Sum(ci => ci.Quantity));
+
+        return quantityByItem;
+    }
+    private string GetRandomColour(Random random)
+    {
+        return ColorUtil.ColorHexString((byte)random.Next(0, 255), (byte)random.Next(0, 255), (byte)random.Next(0, 255));
+    }
+
+}
