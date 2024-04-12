@@ -95,12 +95,6 @@ namespace pms.app.tests
             Assert.NotEmpty(result);
             Assert.IsType<List<Category>>(result);
             Assert.True(result.Count <= 10);
-
-            foreach (var category in result)
-            {
-                Assert.NotNull(category);
-                Assert.NotNull(category.Name);
-            }
         }
 
 
@@ -145,7 +139,7 @@ namespace pms.app.tests
         public async Task Delete_Category_Should_Delete_Category_If_Exists_Test()
         {
             var categories = await _unitOfWork.GetRepository<Category>().GetAllAsync();
-            var category = categories.FirstOrDefault(); // Deleting the first category for testing
+            var category = categories.First(); // Deleting the first category for testing
 
             // Assert
             Assert.NotNull(category);

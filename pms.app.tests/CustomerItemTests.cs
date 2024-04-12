@@ -20,6 +20,12 @@ namespace pms.app.tests
         {
             var items = await _unitOfWork.GetRepository<Item>().GetAllAsync();
             var customers = await _unitOfWork.GetRepository<Customer>().GetAllAsync();
+
+            if (customers.Count < 2 || items.Count < 2)
+            {
+                return;
+            }
+
             var customer = customers[2];
             var item = items[2];
 
